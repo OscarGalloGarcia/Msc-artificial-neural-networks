@@ -1,0 +1,11 @@
+[project]
+name = "msc-artificial-neural-networks"
+version = "0.1.0"
+description = "Coursework, implementations and notes for the Artificial Neural Networks course"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "pandas",
+    "jupyterlab",
+]
