@@ -16,14 +16,14 @@ X = np.array([
 ])
 #print(X.shape)
 
-f = np.array([1 ,1 ,1 ,0 ,1 ,0 ,0 ,0])
+d = np.array([1 ,1 ,1 ,0 ,1 ,0 ,0 ,0])
 
 #Clasificacion c0, c1
 c0 = []
 c1 = []
 
 for i, valor in enumerate(X):
-    if f[i] == 1:
+    if d[i] == 1:
         c1.append(valor)
     else:
         c0.append(valor)
@@ -53,3 +53,21 @@ ax.set_title('Patrones de f(x1,x2,x3) por clase')
 ax.legend()
 ax.view_init(elev=20, azim=35)
 plt.show()
+
+
+#Perceptron
+#valores iniciales
+n_patrones, n_entradas = X.shape
+w = np.random.rand(3)
+b = np.random.rand()
+eta = 0.5
+
+
+y = np.zeros(n_patrones)
+for i in range(n_patrones):
+    v = np.dot(w, X[i,:])+b
+    if v >= 0:
+        y[i] = 1
+    else:
+        y[i]=0
+
