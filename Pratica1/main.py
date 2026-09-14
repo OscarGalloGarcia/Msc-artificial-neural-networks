@@ -16,6 +16,7 @@ X = np.array([
 ])
 #print(X.shape)
 
+# Deseado calculado manualmente
 d = np.array([1 ,1 ,1 ,0 ,1 ,0 ,0 ,0])
 
 #Clasificacion c0, c1
@@ -49,7 +50,7 @@ ax.scatter(c1[:, 0], c1[:, 1], c1[:, 2],
 ax.set_xlabel('x1')
 ax.set_ylabel('x2')
 ax.set_zlabel('x3')
-ax.set_title('Patrones de f(x1,x2,x3) por clase')
+ax.set_title('Clasificación de f(x1,x2,x3)')
 ax.legend()
 ax.view_init(elev=20, azim=35)
 plt.show()
@@ -58,16 +59,38 @@ plt.show()
 #Perceptron
 #valores iniciales
 n_patrones, n_entradas = X.shape
-w = np.random.rand(3)
-b = np.random.rand()
-eta = 0.5
+w = np.random.rand(3) #Pesos
+b = np.random.rand() #Bias
+eta = 0.5 #Learning Rate 
 
 
+#Prediccion
 y = np.zeros(n_patrones)
-for i in range(n_patrones):
-    v = np.dot(w, X[i,:])+b
-    if v >= 0:
-        y[i] = 1
-    else:
-        y[i]=0
+errores = 0 #numero de exitos
+epocas = 100
+for epoca in range(epocas):
+    print(f"epoca = {epoca}") #epoca
+    errores = 0
+    for i in range(n_patrones):
+        #print(f"i = {i}") #Iteracion en el dato
+        v = np.dot(w, X[i,:])+b # u = x^T w; v = u + b
+        if v >= 0: # Funcion de activacion "Escalon"
+            y[i] = 1
+        else:
+            y[i]=0
+        if y[i] != d[i]:
+            #Actualizacion de peso y bias
+            w = w + eta * (d[i] - y[i]) * X[i,:]
+            b = b + eta * (d[i] - y[i])
+            errores += 1
+
+    print(f"errores: {errores}")
+    print(f"w = {w}")
+    print(f"b = {b}")
+
+    if errores == 0: # Si le diste una pasada a los patrones y error quedo 0 entonces tienes los pesos y bias correctos
+        break
+
+
+    
 
