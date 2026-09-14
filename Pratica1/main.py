@@ -91,6 +91,40 @@ for epoca in range(epocas):
     if errores == 0: # Si le diste una pasada a los patrones y error quedo 0 entonces tienes los pesos y bias correctos
         break
 
+#Resultado
+rango = np.linspace(-0.2, 1.2, 20)
+X1, X2 = np.meshgrid(rango, rango)
+# Despeje de x3 a partir de w1*x1 + w2*x2 + w3*x3 + b = 0
+X3 = -(w[0]*X1 + w[1]*X2 + b) / w[2]
 
-    
+figure = plt.figure(figsize=(9,8))
+ax = figure.add_subplot(111, projection='3d')
 
+for p in X:
+    for q in X:
+        if np.sum(np.abs(p - q)) == 1:   
+            ax.plot([p[0], q[0]], [p[1], q[1]], [p[2], q[2]],
+                    color='gray', linewidth=0.7, alpha=0.5)
+
+ax.scatter(c0[:, 0], c0[:, 1], c0[:, 2],
+           marker='o', s=140, facecolors='none', edgecolors='tab:blue',
+           linewidths=2, depthshade=False, label='C0  (f = 0)')
+
+ax.scatter(c1[:, 0], c1[:, 1], c1[:, 2],
+           marker='x', s=140, color='tab:red',
+           linewidths=2, depthshade=False, label='C1  (f = 1)')
+
+ax.plot_surface(X1, X2, X3, alpha=0.35, color='tab:green', edgecolor='none')
+
+ax.set_xlabel('x1'); ax.set_ylabel('x2'); ax.set_zlabel('x3')
+ax.set_xlim(-0.2, 1.2); ax.set_ylim(-0.2, 1.2); ax.set_zlim(-0.2, 1.2)
+ax.set_title('Plano de decisión aprendido por el perceptrón')
+ax.legend(loc='upper left')
+ax.view_init(elev=25, azim=60)
+plt.tight_layout()
+plt.show()
+
+# Verificacion 
+for i in range(n_patrones):
+    v = np.dot(w, X[i,:]) + b
+    print(X[i], "v =", round(v,3), " y =", int(v>=0), " d =", d[i])
