@@ -78,16 +78,15 @@ for epoca in range(epocas):
     print(f"epoca = {epoca}") #epoca
     errores = 0
     for i in range(n_patrones):
-        #print(f"i = {i}") #Iteracion en el dato
         v = np.dot(w, X[i,:])+b # u = x^T w; v = u + b
-        if v >= 0: # Funcion de activacion "Escalon"
+        if v >= 0: # Funcion de activacion
             y[i] = 1
         else:
             y[i]=0
-        if y[i] != d[i]:
+        if y[i] != d1[i]:
             #Actualizacion de peso y bias
-            w = w + eta * (d[i] - y[i]) * X[i,:]
-            b = b + eta * (d[i] - y[i])
+            w = w + eta * (d1[i] - y[i]) * X[i,:]
+            b = b + eta * (d1[i] - y[i])
             errores += 1
 
     print(f"errores: {errores}")
