@@ -92,7 +92,6 @@ class perceptron:
 
             if errores == 0: # Si le diste una pasada a los patrones y error quedo 0 entonces tienes los pesos y bias correctos
                 break
-        return
 
     def verificacion(self, X, d):
         n_patrones, n_entradas = X.shape
