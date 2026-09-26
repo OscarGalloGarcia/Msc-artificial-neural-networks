@@ -1,0 +1,448 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% Paquetes para español
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{xcolor}
+% Si falta una imagen, muestra un recuadro en lugar de detener la compilación
+\let\oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{\IfFileExists{#2}{\oldincludegraphics[#1]{#2}}{\fbox{\parbox{0.8\columnwidth}{\centering Imagen faltante:\\ \texttt{\detokenize{#2}}}}}}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Perceptrón}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Oscar Alberto Gallo García}
+\IEEEauthorblockA{\textit{M. C. en Robótica e Inteligencia Artificial} \\
+\textit{Centro Universitario de Ciencias Exactas e Ingenierías}\\
+Guadalajara, México \\
+oscar.gallo5770@alumnos.udg.mx}
+}
+
+\maketitle
+
+\begin{abstract}
+    Se trabajó el algoritmo simple del perceptrón desde cero, implementado para
+    una neurona para clasificación lineal binaria y con dos neuronas para
+    clasificación de cuatro clases.
+    Se desarrollaron las funciones de entrenamiento y prediccion demostrando
+    la capacidad de este algoritmo para resolver problemas linealmente separables.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Perceptrón, Neurona Artificial, Clasificacion lineal
+\end{IEEEkeywords}
+
+\section{Introducción}
+
+
+
+\section{Desarrollo}
+
+\subsection{Modelo del Sistema No Lineal}
+El sistema de este proyecto se puede analizar a partir de las leyes de movimiento de Newton, dónde las fuerzas que actúan sobre el sistema se determinar a partir del esquemático del sistema (Figura \ref{fig:PICdiag}).\\
+Es fácil analizar el sistema si lo separamos en dos subsistemas; el carro y el péndulo invertido.\\
+Para el carro con desplazamiento lineal tenemos la suma de fuerzas \eqref{eq:Fcarro}
+\begin{align}
+    \label{eq:Fcarro}
+    \sum F = 0 \rightarrow \quad F_c = H + M_c\ddot{x}_c+b_c\dot{x}_c
+\end{align}
+Dónde $F_c$ es la fuerza lineal que se ejerce sobre el carro, $H$ es la fuerza de reacción interna horizontal del pivote que conecta con el péndulo, $M_c$ es la masa de carro, $b_c$ es un coeficiente de fricción viscosa del carro y $x_c$ es el desplazamiento lineal del carro.
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.1]{figures/PICdiag.jpg}
+\caption{Esquemático del Sistema}
+\label{fig:PICdiag}
+\end{figure}
+Ahora Podemos definir la suma de Torques en el péndulo.
+\begin{align}
+    \label{eq:Tpendulo}
+    \sum \tau = 0\rightarrow \quad I\ddot{\alpha} = -Vl_p\sin(\alpha) -Hl_p\cos(\alpha) + b_p\dot{\alpha}
+\end{align}
+Dónde $V$ es la fuerza de reacción interna vertical del pivote que conecta con el péndulo, $I$ es el momento de inercia del péndulo respecto a su centro de gravedad, $l_p$ es la longitud del péndulo al centro de gravedad y $b_p$ es el coeficiente de fricción viscosa del péndulo.\\
+Si aplicamos la segunda ley de Newton, podemos determinar el movimiento horizontal y vertical del péndulo \cite{b1}.
+\begin{align}
+    \label{eq:Fxpendulo}
+    \sum F_x &= 0 \rightarrow \quad H = M_p\ddot{x}_p\\
+    \label{eq:Fypendulo}
+    \sum F_y &= 0 \rightarrow \quad V = M_pg + M_p\ddot{y}_p
+\end{align}
+Dónde $M_p$ es la masa del péndulo y $g$ es la constante de aceleración por efecto de la gravedad. Ahora determinamos la posición del péndulo en sus componentes $(x,y)$.
+\begin{align}
+    \label{eq:Pospendulo}
+    x_p = x_c - l_p\sin(\alpha),\quad y_p = l_p\cos(\alpha)
+\end{align}
+Sustituyendo las coordenadas de \eqref{eq:Pospendulo} en \eqref{eq:Fxpendulo} y \eqref{eq:Fypendulo} tenemos:
+\begin{align}
+    H &= M_p\left( \ddot{x}_c - \frac{d^2}{dt^2}l_p\sin(\alpha) \right)\nonumber\\
+    \label{eq:Fxpendulo2}
+    H &= M_p\ddot{x}_c - M_pl_p\ddot{\alpha}\cos(\alpha) + M_pl_p\dot{\alpha}^2\sin(\alpha)\\
+    V &= M_pg + M_p\left(\frac{d^2}{dt^2}l_p\cos(\alpha)\right)\nonumber\\
+    \label{eq:Fypendulo2}
+    V &= M_pg -M_pl_p\ddot{\alpha}\sin(\alpha) -M_pl_p\dot{\alpha}^2\cos(\alpha)
+\end{align}
+Ahora podemos sustituir \eqref{eq:Fxpendulo2} en \eqref{eq:Fcarro}
+\begin{align}
+    \label{eq:EcCarro}
+    F_c = (M_p + M_c)\ddot{x}_c +M_pl_p\left(\dot{\alpha}^2\sin(\alpha)-\ddot{\alpha}\cos(\alpha) \right) + b_c\dot{x}_c
+\end{align}
+Y también podemos sustituir \eqref{eq:Fxpendulo2} y \eqref{eq:Fypendulo2} en \eqref{eq:Tpendulo}
+\begin{align}
+    \label{eq:EcPendulo}
+    I\ddot{\alpha} =& M_pl_p\left( l_p\ddot{\alpha} - g\sin(\alpha) - \ddot{x}_c\cos(\alpha) \right) + b_p\dot{\alpha}
+\end{align}
+Las ecuaciones \eqref{eq:EcCarro} y \eqref{eq:EcPendulo} representan las ecuaciones de movimiento del sistema PIC (Péndulo Invertido sobre Carro).
+
+\subsection{Espacio de Estados}
+Tenemos que representar el sistema en espacio de estados de la forma \eqref{eq:SSForm}.
+\begin{align}
+    \label{eq:SSForm}
+    \dot{\mathbf{x}}&=f(\mathbf{x})+g(\mathbf{x})u\\
+    \mathbf{y}&=h(\mathbf{x})\nonumber
+\end{align}
+Comenzamos con definir el sistema en forma matricial
+\begin{align*}
+    \begin{bmatrix}
+        M_pl^2_p - I & -M_pl_p\cos(\alpha)\\
+        -M_pl_p\cos(\alpha) & M_p + M_c
+    \end{bmatrix}
+    \begin{bmatrix}
+        \ddot{\alpha} \\ \ddot{x}
+    \end{bmatrix}
+    =\\
+    \begin{bmatrix}
+        M_pl_pg\sin(\alpha) - b_p\dot{\alpha}\\
+        F_c -M_pl_p\dot{\alpha}^2\sin(\alpha)-b_c\dot{x}_c
+    \end{bmatrix}
+\end{align*}
+Despejamos el vector de aceleraciones
+\begin{align*}
+    \begin{bmatrix}
+        \ddot{\alpha} \\ \ddot{x}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        M_pl^2_p - I & -M_pl_p\cos(\alpha)\\
+        -M_pl_p\cos(\alpha) & M_p + M_c
+    \end{bmatrix}^{-1}\\
+    \begin{bmatrix}
+        M_pl_pg\sin(\alpha) - b_p\dot{\alpha}\\
+        F_c -M_pl_p\dot{\alpha}^2\sin(\alpha)-b_c\dot{x}_c
+    \end{bmatrix}
+\end{align*} 
+Al calcular la inversa y multiplicar las matrices tenemos dos ecuaciones para cada aceleración. Aprovechamos este paso para hacer el cambio de variables a variables de estado:
+\begin{align*}
+    x_1=x_c,\quad x_2=\dot{x}_c,\quad x_3=\alpha,\quad x_4=\dot{\alpha}
+\end{align*}
+Y el espacio de estados queda expresado mediante \eqref{eq:StateSpace}
+\begin{align}
+    \label{eq:StateSpace}
+    \begin{bmatrix}
+        \dot{x}_1\\ \dot{x}_2\\ \dot{x}_3\\ \dot{x}_4
+    \end{bmatrix}=
+    \begin{bmatrix}
+        x_2\\ f_2(\mathbf{x})\\ x_4 \\ f_4(\mathbf{x)}
+    \end{bmatrix}+
+    \begin{bmatrix}
+        0\\g_2(\mathbf{x})\\ 0\\ g_4(\mathbf{x})
+    \end{bmatrix}F_c
+\end{align}
+Dónde
+\begin{align}
+     f_2(\mathbf{x}) =&
+     [-(I+M_p l_p^2)\,b_c\,x_2 - (M_p^2 l_p^3 + M_p l_p I)\,x_4^2 \sin(x_3)\nonumber\\
+     \label{eq:f2}
+      &- M_p l_p \cos(x_3)\,b_p\,x_4
+        + M_p^2 l_p^2 g \cos(x_3)\sin(x_3)]/D(\mathbf{x})\\
+    f_4(\mathbf{x}) =&
+     [(M_p+M_c)M_p l_p g \sin(x_3) - (M_p+M_c)\,b_p\,x_4\nonumber\\
+     \label{eq:f4}
+      &- M_p^2 l_p^2 x_4^2 \sin(x_3)\cos(x_3)
+    - M_p l_p b_c \cos(x_3)\,x_2]/D(\mathbf{x})\\
+    \label{eq:g2}
+    g_2(\mathbf{x})=& \frac{I + M_p l_p^2}{D(\mathbf{x})}\\
+    \label{eq:g4}
+    g_4(\mathbf{x})=& \frac{M_p l_p \cos(x_3)}{D(\mathbf{x})}\\
+    D(\mathbf{x})=& (M_p+M_c)I+M_pM_cl_p^2 +M_p^2l_p^2\sin^2(x_3)\nonumber
+\end{align}
+\subsection{Puntos de Equilibrio}
+Para obtener los puntos de equilibrio tenemos que evaluar $\dot{\mathbf{x}}=\mathbf{0}$
+\begin{align*}
+    \dot{x}_1=0\rightarrow\quad x_2=0\\
+    \dot{x}_3=0\rightarrow\quad x_4=0\\
+\end{align*}
+\begin{align}
+    &\dot{x}_2=0\rightarrow\quad f_2(\mathbf{x})+g_2(\mathbf{x})F_c=0\nonumber\\
+    &(I+M_pl_p^2)F_c+M_p^2l_p^2g\cos(x_3)\sin(x_3)=0\nonumber\\
+    \label{eq:F1Equilibrium}
+    &F_c=-\frac{M_p^2l_p^2g\cos(x_3)\sin(x_3)}{I+M_pl_p^2}
+\end{align}
+\begin{align}
+    &\dot{x}_4=0\rightarrow\quad f_4(\mathbf{x})+g_4(\mathbf{x})F_c=0\nonumber\\
+    \label{eq:F2Equilibrium}
+    &(M_p+M_c)g\sin(x_3)+F_c\cos(x_3)=0
+\end{align}
+Sustituyendo \eqref{eq:F1Equilibrium} en \eqref{eq:F2Equilibrium}
+\begin{align*}
+    g\sin(x_3)\left(M_p+M_c-\frac{M_p^2l_p^2\cos^2(x_3)}{I+M_pl_p^2}\right)=0
+\end{align*}
+De aquí podemos tener dos factores que podrían ser 0. En el primer factor
+\begin{align}
+    \label{eq:FirstFactor}
+    g\sin(x_3)=0\rightarrow\quad x_3=k\pi\ |\ k\in\mathbb{Z}
+\end{align}
+En el segundo factor
+\begin{align}
+    \label{eq:SecondFactor}
+    \cos^2(x_3)=\frac{(M_p+M_c)(I+M_pl_p^2)}{M_p^2l_p^2}
+\end{align}
+Sabemos que
+\begin{align*}
+    0\leq \cos^2(x_3)\leq 1,\forall x_3\in\mathbb{R}
+\end{align*}
+Por lo tanto, para que este segundo factor sea 0, debe cumplirse:
+\begin{align}
+    \label{eq:FirstIneq}
+    (M_p+M_c)(I+M_pl_p^2)\leq M_p^2l_p^2
+\end{align}
+Pero observamos que
+\begin{align*}
+    M_p+M_c>0,\quad I+M_pl_p^2>M_pl_p^2
+\end{align*}
+Entonces
+\begin{align}
+    \label{eq:SecondIneq}
+    (M_p+M_c)(I+M_pl_p^2)> M_p(M_pl_p^2)
+\end{align}
+Las desigualdades \eqref{eq:FirstIneq} y \eqref{eq:SecondIneq} se contradicen, esto implica que \eqref{eq:SecondFactor} no se puede cumplir para parámetros físicos reales. Solo el factor \eqref{eq:FirstFactor} genera el 0 en la multiplicación.\\
+Por último sustituimos $x_3=k\pi$ en \eqref{eq:F1Equilibrium}
+\begin{align*}
+    F_c=0
+\end{align*}
+Los puntos de equilibrio encontrados son:
+\begin{align*}
+    \mathbf{x}^*=
+    \begin{bmatrix}
+        x_1^* & 0 & k\pi & 0
+    \end{bmatrix}^\top\ | \ k\in\mathbb{Z}
+\end{align*}
+Como se puede observar, existen infinitos puntos de equilibrio, pero se pueden simplificar en $x_3^*$ a los equilibrios naturales del péndulo (colgando e invertido)
+\begin{align}
+    \label{eq:Equilibrium}
+    \mathbf{x}_1^*=
+    \begin{bmatrix}
+         x_1^* & 0 & 0 & 0
+    \end{bmatrix}^\top,\quad
+    \mathbf{x}_2^*=
+    \begin{bmatrix}
+         x_1^* & 0 & \pi & 0
+    \end{bmatrix}^\top,\quad F_c=0
+\end{align}
+\subsection{Análisis de Puntos de Equilibrio}
+Para determinar el comportamiento y estabilidad de los puntos de equilibrio, se escoge linealizar el sistema al rededor de dichos puntos. Para ello se comienza con el cálculo del Jacobiano:
+\begin{align}
+    \label{eq:Jacobian}
+    \left. \begin{bmatrix}
+        0 & 1 & 0 & 0\\
+        0 & \frac{\partial f_2}{\partial x_2} & \frac{\partial f_2}{\partial x_3} & \frac{\partial f_2}{\partial x_4}\\
+        0 & 0 & 0 & 1\\
+        0 & \frac{\partial f_4}{\partial x_2} & \frac{\partial f_4}{\partial x_3} & \frac{\partial f_4}{\partial x_4}\\
+    \end{bmatrix}\right|_{\mathbf{x}=\mathbf{x}^*} =
+    \begin{bmatrix}
+        0 & 1 & 0 & 0\\
+        0 & a_{22} & a_{23} & c_3a_{24}\\
+        0 & 0 & 0 & 1\\
+        0 & c_3a_{42} & c_3a_{43} & a_{44}\\
+    \end{bmatrix}
+\end{align}
+Con
+\begin{align*}
+    a_{22} &= -\frac{(I+M_pl_p^2)b_c}{D_{\mathbf{x}^*}},
+    &&a_{24} = -\frac{M_pl_pb_p}{D_{\mathbf{x}^*}}\\
+    a_{23} &= \frac{M_p^2l_p^2g}{D_{\mathbf{x}^*}}\\
+    a_{42} &= -\frac{M_pl_pb_c}{D_{\mathbf{x}^*}},
+    &&a_{44} = -\frac{(M_p+M_c)b_p}{D_{\mathbf{x}^*}}
+\end{align*}
+\begin{align*}
+    a_{43} &= \frac{(M_p+M_c)M_pl_pg}{D_{\mathbf{x}^*}},\quad c_3=\cos(x_3)
+\end{align*}
+Dónde
+\begin{align*}
+    D_{\mathbf{x}^*}=(M_p+M_c)I+M_pM_cl_p^2
+\end{align*}
+Evaluamos la matriz en $\mathbf{x}_1^*$
+\begin{align}
+    \label{eq:Aeq1}
+    A_1=
+    \begin{bmatrix}
+        0 & 1 & 0 & 0\\ 0 & a_{22} & a_{23} & a_{24}\\ 0 & 0 & 0 & 1\\
+        0 & a_{42} & a_{43} & a_{44}
+    \end{bmatrix}
+\end{align}
+Y en $\mathbf{x}_2^*$
+\begin{align}
+    \label{eq:Aeq2}
+    A_2=
+    \begin{bmatrix}
+        0 & 1 & 0 & 0\\ 0 & a_{22} & a_{23} & -a_{24}\\ 0 & 0 & 0 & 1\\
+        0 & -a_{42} & -a_{43} & a_{44}
+    \end{bmatrix}
+\end{align}
+Para analizar el punto de equilibrio, tenemos que calcular los valores propios de la matriz $A$ correspondiente. Para simplificar los cálculos, se sustituyen los valores reales de los parámetros físicos del experimento, descritos en el Cuadro \ref{tab:params}.\\
+Para $A_1$
+\begin{align*}
+    \lambda_1=0,\quad \lambda_2=-8.2350,\quad \lambda_3=-4.6498,\quad \lambda_4=6.5
+\end{align*}
+Se puede ver que existe al menos un valor propio real positivo, por lo tanto $\mathbf{x}_1^*$ es inestable.\\
+Para $A_2$
+\begin{align*}
+    \lambda_1=0,\quad \lambda_2=-5.4542,\quad \lambda_3=-0.4695\pm6.7460i
+\end{align*}
+Existen valores propios negativos con parte imaginaria conjugada, por lo tanto $\mathbf{x}_2^*$ es marginalmente estable.
+
+\subsection{Control}
+Para el control no lineal se escoge realizar una linealización entrada-salida, que que busca simplificar la relación entre la entrada de control ($F_c=u$) y una salida específica del sistema. En nuestro caso definimos como salida la posición del péndulo, es decir, $x_3$.
+\begin{align*}
+    y=h(\mathbf{x})=x_3
+\end{align*}
+Comenzamos calculando la derivada de $y$ repetidamente hasta que la entrada $u$ aparezca explícitamente con un coeficiente no nulo. Esté numero de veces que derivamos define el grado relativo $r$
+\begin{align*}
+    \dot{y}&=\frac{\partial h(\mathbf{x})}{\partial \mathbf{x}}[f(\mathbf{x})+g(\mathbf{x})u]=x_4=\psi_2(\mathbf{x})\\
+    \ddot{y}&=\frac{\partial \psi_2(\mathbf{x})}{\partial \mathbf{x}}[f(\mathbf{x})+g(\mathbf{x})u]=f_4(\mathbf{x})+g_4(\mathbf{x})u
+\end{align*}
+en la derivada 2 se encuentra $u$, por lo tanto $r=2<n$.\\
+Definimos el sistema entrada-salida con $z_1=y,\ z_2=\dot{y}$
+\begin{align}
+    \label{eq:InOutSis}
+    \dot{z_1} &= z_2\\
+    \dot{z_2} &= f_4(\mathbf{x})+g_4(\mathbf{x})u\nonumber
+\end{align}
+Definimos $u$ para linealizar el sistema entrada-salida
+\begin{align}
+    \label{eq:UnonLinear}
+    u=\frac{v-f_4(\mathbf{x})}{g_4(\mathbf{x})}
+\end{align}
+Al sustituir \eqref{eq:UnonLinear} en \eqref{eq:InOutSis}, obtenemos el sistema lineal entrada-salida en lazo cerrado
+\begin{align}
+    \label{eq:InOutLinSis}
+    \dot{z}_1 &= z_2\\
+    \dot{z}_2 &= v\nonumber
+\end{align}
+Nótese que en $g_4(\mathbf{x})$ tenemos un $\cos(x_3)$, por lo tanto, la linealización con $u$ solamente es válida si:
+\begin{align*}
+    -\frac{\pi}{2}\leq x_3\leq \frac{\pi}{2}
+\end{align*}
+Una vez linealizado el sistema entrada-salida, se puede diseñar $v$ con asignación de polos.
+\begin{align*}
+    v=-k_1y-k_2\dot{y}
+\end{align*}
+Entonces
+\begin{align*}
+    \dot{\mathbf{z}}= \mathbf{A}_z\mathbf{z}=
+    \begin{bmatrix}
+        0 & 1\\ -k_1 & -k_2
+    \end{bmatrix}\mathbf{z}
+\end{align*}
+El polinomio característico es
+\begin{align*}
+    p_z(\lambda)=\det(\lambda\mathbf{I}-\mathbf{A}_z)=\lambda^2+k_2\lambda+k_1=0
+\end{align*}
+Si lo parametrizamos como un sistema de segundo orden
+\begin{align*}
+    p_z(\lambda)=\lambda^2+2\zeta\omega_n\lambda+\omega_n^2=0,\quad k_1=\omega_n^2,\ k_2=2\zeta\omega_n
+\end{align*}
+Escogemos una frecuencia $\omega_n<\sqrt{(M_pl_pg)/I_p}$. Sustituyendo los valores parámetros físicos tenemos  $\omega_n=6$ y $\zeta=0.8$. Esto nos da las ganancias $k_1=36$ y $k_2=9.6$.
+\subsection{Simulación}
+
+
+El sistema consiste en un péndulo rígido de masa $M_p$ articulado sobre un carro $M_c$ que se desplaza horizontalmente. La Tabla~\ref{tab:params} resume los parámetros del hardware empleado.
+
+\begin{table}[htbp]
+\caption{Parámetros del sistema Quanser IP01 + SIP}
+\label{tab:params}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parámetro} & \textbf{Símbolo} & \textbf{Valor} \\
+\midrule
+Masa del péndulo        & $M_p$   & $0.127$~kg \\
+Longitud total          & $L_p$   & $0.3365$~m \\
+Dist.\ al c.d.m.        & $l_p$   & $0.1778$~m \\
+Momento de inercia      & $I_p$   & $1.20\!\times\!10^{-3}$~kg\,m$^2$ \\
+Amort.\ péndulo         & $B_p$   & $0.0024$~N\,m\,s/rad \\
+Masa del carro          & $M_c$   & $0.7031$~kg \\
+Amort.\ equivalente     & $B_{eq}$& $4.3$~N\,s/m \\
+Gravedad                & $g$     & $9.81$~m/s$^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.15]{figures/image_1.png}
+\caption{Simulación: Posición del carro}
+\label{fig:PICSimpos}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.15]{figures/image_2.png}
+\caption{Simulación: ángulo del péndulo}
+\label{fig:PICSimdeg}
+\end{figure}
+
+
+
+
+\section{Resultados}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.5]{figures/3.png}
+\caption{Sistema experimental}
+\label{fig:PICexp}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.2]{figures/image_3.png}
+\caption{Sistema experimental: Posición del carro}
+\label{fig:PICpos}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.13]{figures/Angulo.jpg}
+\caption{Sistema experimental: ángulo del péndulo}
+\label{fig:PICdeg}
+\end{figure}
+
+\section{Conclusiones}
+Aunque la condición teórica de la linealización requiere únicamente que $\cos(x_3)\neq0$, lo cual se cumple para $|x_3|<\pi/2$, en la práctica la validez del modelo se restringe a un entorno pequeño alrededor del punto de equilibrio.
+Esto se debe a que, conforme $x_3$ se aproxima a $\pm\pi/2$, el término $g_4(\mathbf{x})$ tiende a cero, provocando que la ley de control requiera valores excesivamente grandes de la entrada $u$, lo cual no es físicamente realizable.
+Además, para ángulos grandes, los efectos no lineales se vuelven dominantes, deteriorando la precisión de la linealización. Por esta razón, se considera un rango práctico de operación de aproximadamente $|x_3|<10\sim15\ \deg$.
+
+\begin{thebibliography}{00}
+
+\bibitem{b1} H. K. Khalil, Nonlinear Systems, 3rd ed. Upper Saddle River, NJ: Prentice Hall, 2002.
+
+\bibitem{b2} J.-J. E. Slotine and W. Li, Applied Nonlinear Control. Englewood Cliffs, NJ: Prentice Hall, 1991.
+
+\bibitem{b3} A. Isidori, Nonlinear Control Systems, 3rd ed. London, U.K.: Springer-Verlag, 1995.
+
+\bibitem{b4} K. Ogata, Modern Control Engineering, 5th ed. Upper Saddle River, NJ: Prentice Hall, 2010.
+
+\bibitem{b5} F. L. Lewis, D. Vrabie, and V. L. Syrmos, Optimal Control, 3rd ed. Hoboken, NJ: Wiley, 2012.
+
+\end{thebibliography}
+
+\end{document}
