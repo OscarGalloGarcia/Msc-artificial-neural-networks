@@ -1,0 +1,99 @@
+variable,orden,etiqueta,formato,tipo,longitud,decimales
+FOLIO_I,1,Folio,Texto,string,13,0
+FOLIO_INT,2,Folio de integrante,Texto,string,16,0
+t_hora,3,TIEMPO HORA,Numérico,integer,10,0
+t_min,4,TIEMPO MINUTOS,Numérico,integer,10,0
+t_sumai,5,TIEMPO SUMA INICIO,Numérico,integer,10,0
+t_sumaf,6,TIEMPO SUMA FIN,Numérico,integer,10,0
+hora_ini_1,7,Hora de Inicio 1,Texto,string,8,0
+fecha_ini_1,8,Fecha de Inicio 1,Texto,string,10,0
+hora_fin_1,9,Hora termino 1,Texto,string,8,0
+fecha_fin_1,10,Fecha termino 1,Texto,string,10,0
+tiempo1,11,Duración de la Entrevista 1,Numérico,integer,10,0
+resultado_1,12,Resultado de entrevista 1,Numérico,integer,5,0
+hora_ini_2,13,Hora de Inicio 2,Texto,string,8,0
+fecha_ini_2,14,Fecha de Inicio 2,Texto,string,10,0
+hora_fin_2,15,Hora de Termino 2,Texto,string,8,0
+fecha_fin_2,16,Fecha de Termino 2,Texto,string,10,0
+tiempo2,17,Duración de la Entrevista 2,Numérico,integer,10,0
+resultado_2,18,Resultado de entrevista 2,Numérico,integer,5,0
+hora_ini_3,19,Hora de Inicio 3,Texto,string,8,0
+fecha_ini_3,20,Fecha de Inicio 3,Texto,string,10,0
+hora_fin_3,21,Hora de Termino 3,Texto,string,8,0
+fecha_fin_3,22,Fecha de Termino 3,Texto,string,10,0
+tiempo3,23,Duración de la Entrevista 3,Numérico,integer,10,0
+resultado_3,24,Resultado de entrevista 3,Numérico,integer,5,0
+hora_ini_4,25,Hora de Inicio 4,Texto,string,8,0
+fecha_ini_4,26,Fecha de Inicio 4,Texto,string,10,0
+hora_fin_4,27,Hora de Termino 4,Texto,string,8,0
+fecha_fin_4,28,Fecha de Termino 4,Texto,string,10,0
+tiempo4,29,Duración de la Entrevista 4,Numérico,integer,10,0
+resultado_4,30,Resultado de entrevista 4,Numérico,integer,5,0
+hora_ini,31,Hora de Inicio,Texto,string,8,0
+fecha_ini,32,Fecha de inicio,Texto,string,10,0
+localizado,33,localizado,Numérico,integer,5,0
+entidad,34,Entidad,Texto,string,2,0
+desc_ent,35,DESC_ENT,Texto,string,34,0
+municipio,36,Municipio,Texto,string,3,0
+desc_mun,37,DESC_MUN,Texto,string,40,0
+nota1,38,Concentimiento para realizar la entrevista,Numérico,integer,5,0
+region,39,Region o zona de trabajo,Numérico,integer,5,0
+h0302,40,Sexo,Numérico,integer,5,0
+h0303,41,Edad,Numérico,integer,5,0
+nota01,42,NOTA01,Numérico,integer,5,0
+an01_1,43,1. AHORA VOY A PESAR A (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,9,3
+an01_2,44,1. AHORA VOY A PESAR A (NOMBRE) (SEGUNDA MEDICIÓN),Numérico,number,9,3
+an02,45,2. ¿QUE ROPA TRAÍA PUESTA (NOMBRE)?,Numérico,integer,5,0
+an03,46,3. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+nota02,47,NOTA02,Numérico,integer,5,0
+an04_1,48,4. AHORA VOY A MEDIR LA ESTATURA DE (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,8,2
+an04_2,49,4. AHORA VOY A MEDIR LA ESTATURA DE (NOMBRE) (SEGUNDA MEDICIÓN),Numérico,number,8,2
+an05,50,5. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+an06,51,6. USTED ESTÁ...,Numérico,integer,5,0
+an07,52,7. ¿CUÁNTOS MESES TIENE DE EMBARAZO?,Numérico,integer,5,0
+nota03,53,NOTA03,Numérico,integer,5,0
+an08_1,54,8. AHORA VOY A MEDIR LA CINTURA DE (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,8,2
+an08_2,55,8. AHORA VOY A MEDIR LA CINTURA DE (NOMBRE) (SEGUNDA MEDICIÓN),Numérico,number,8,2
+an09,56,9. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+nota04,57,NOTA04,Numérico,integer,5,0
+an10,58,10. ¿(NOMBRE) HA PERDIDO PESO RECIENTEMENTE (EN LOS ÚLTIMOS TRES MESES)?,Numérico,integer,5,0
+an11,59,11. ¿(NOMBRE) TIENE ALGUNA AMPUTACIÓN?,Numérico,integer,5,0
+an12_1,60,12. AHORA VOY A PESAR A (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,9,3
+an12_2,61,12. AHORA VOY A PESAR A (NOMBRE) (SEGUNDA MEDICIÓN),Numérico,number,9,3
+an13,62,13. ¿QUE ROPA TRAÍA PUESTA (NOMBRE)?,Numérico,integer,5,0
+an14,63,14. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+an15_1,64,15. AHORA VOY A MEDIR LA ESTATURA DE (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,8,2
+an15_2,65,15. AHORA VOY A MEDIR LA ESTATURA DE (NOMBRE) (SEGUNDA MEDICIÓN),Numérico,number,8,2
+an16,66,16. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+an17_1,67,17. AHORA VOY A MEDIR LA DISTANCIA QUE HAY ENTRE LA RODILLA Y SU TALÓN DE (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,8,2
+an18,68,18. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+an19,69,19. AHORA VOY A MEDIR LA CIRCUNFERENCIA DE LA PANTORILLA DE  (NOMBRE),Numérico,number,8,2
+an20,70,20. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+an21_1,71,21. AHORA VOY A MEDIR LA CINTURA DE  (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,8,2
+an21_2,72,21. AHORA VOY A MEDIR LA CINTURA DE  (NOMBRE) (SEGUNDA MEDICIÓN),Numérico,number,8,2
+an22,73,22. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+nota05,74,NOTA05,Numérico,integer,5,0
+an23,75,23.AHORA VOY A MEDIR LA DISTANCIA DEL PECHO HACIA LA PUNTA DE SU DEDO MEDIO DE (NOMBRE) (PRIMERA MEDICIÓN),Numérico,number,8,2
+an24,76,24. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+an25,77,25.AHORA VOY A MEDIR LA CIRCUNFERENCIA MEDIA DEL BRAZO DE (NOMBRE),Numérico,number,8,2
+an26,78,26. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+nota06,79,NOTA06,Numérico,integer,5,0
+an27_01s,80,27. AHORA VOY A TOMAR LA TENSIÓN ARTERIAL DE (NOMBRE) (PRIMERA MEDICIÓN) SISTOLICA,Numérico,integer,5,0
+an27_01d,81,27. AHORA VOY A TOMAR LA TENSIÓN ARTERIAL DE (NOMBRE) (PRIMERA MEDICIÓN) DIASTOLICA,Numérico,integer,5,0
+an27_02s,82,27. AHORA VOY A TOMAR LA TENSIÓN ARTERIAL DE (NOMBRE) (SEGUNDA MEDICIÓN) SISTOLICA,Numérico,integer,5,0
+an27_02d,83,27. AHORA VOY A TOMAR LA TENSIÓN ARTERIAL DE (NOMBRE) (SEGUNDA MEDICIÓN) DIASTOLICA,Numérico,integer,5,0
+an27_03s,84,27. AHORA VOY A TOMAR LA TENSIÓN ARTERIAL DE (NOMBRE) (TERCERA MEDICIÓN)  SISTOLICA,Numérico,integer,5,0
+an27_03d,85,27. AHORA VOY A TOMAR LA TENSIÓN ARTERIAL DE (NOMBRE) (TERCERA MEDICIÓN) DIASTOLICA,Numérico,integer,5,0
+an28,86,28. HORA DE TOMA DE TENSIÓN ARTERIAL,Texto,string,5,0
+an29,87,29. BRAZO EN EL QUE SE LE REALIZÓ LA MEDICIÓN DE LA TENSIÓN ARTERIAL,Numérico,integer,5,0
+an30,88,30. RESULTADO DE LA MEDICIÓN,Numérico,integer,5,0
+comentario,89,¿Algún comentario de la entrevista?,Texto,string,201,0
+tiempo,90,Duración de la Entrevista,Numérico,integer,10,0
+hora_fin,91,Hora de termino,Texto,string,8,0
+fecha_fin,92,Fecha de Termino,Texto,string,10,0
+completa,93,Resultado de Entrevista,Numérico,integer,5,0
+otroent,94,Especifique otro resultado de entrevista,Texto,string,1,0
+ponde_f,95,Ponderador,Numérico,number,14,8
+estrato,96,Estrato urbanidad/ruralidad,Numérico,integer,8,0
+est_sel,97, Estrato de seleccion,Numérico,integer,8,0
+upm,98,Unidad primaria de muestreo,Texto,string,13,0

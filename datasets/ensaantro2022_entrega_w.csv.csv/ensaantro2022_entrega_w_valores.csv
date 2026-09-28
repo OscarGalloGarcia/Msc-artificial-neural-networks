@@ -1,0 +1,122 @@
+variable,valor,etiqueta
+nota1,1,"¿Acepta usted? ,,,, Sí"
+nota1,2,"¿Acepta usted? ,,,, No"
+region,1,Pacifico-Norte
+region,2,Frontera
+region,3,Pacífico-Centro
+region,4,Centro Norte
+region,5,Centro
+region,6,Cd./Edo México
+region,7,Pacífico Sur
+region,8,Península
+region,11,Guanajuato
+region,15,Edo México
+region,19,Nuevo León
+h0302,1,Hombre
+h0302,2,Mujer
+nota01,1,Favor de Continuar
+an01_1,"222,220",No se pesó
+an01_2,"222,220",No se pesó
+an02,1,Ligera
+an02,2,Gruesa
+an02,3,Sin ropa
+an02,4,No se pesó
+an03,1,Sin problema
+an03,2,Problema físico
+an03,3,No cooperó
+an03,4,Se negó
+an03,5,No se encontró
+an03,6,No puede mantenerse de pie
+nota02,1,Favor de Continuar
+an04_1,"222,20",No se midió
+an04_2,"222,20",No se midió
+an05,1,Sin problema
+an05,2,Problema físico
+an05,3,No cooperó
+an05,4,Se negó
+an05,5,No se encontró
+an05,6,No puede mantenerse de pie
+an06,1,Está embarazada?
+an06,2,Está dando pecho?
+an06,3,Está embarazada y dando pecho?
+an06,4,Ninguna de las anteriores
+an06,9,No sabe
+an07,99,No sabe
+nota03,1,Favor de Continuar
+an09,1,Sin problema
+an09,2,Problema físico
+an09,3,No cooperó
+nota04,1,Si
+nota04,2,No
+an10,1,No ha habido pérdida de peso
+an10,2,Pérdida de peso entre 1 y 3 kg
+an10,3,Pérdida de peso mayor a 3 kg
+an10,8,No responde
+an10,9,No sabe
+an11,1,"Sí, de extremidades superiores y camina"
+an11,2,"Sí, de extremidades superiores y no camina"
+an11,3,"Sí, de extremidades inferiores"
+an11,4,No y puede mantenerse de pie
+an11,5,No y solo puede mantenerse sentado
+an11,6,No y está confinado a una cama
+an12_1,"222,220",No se pesó
+an12_2,"222,220",No se pesó
+an13,1,Ligera
+an13,2,Gruesa
+an13,3,Sin ropa
+an13,4,No se pesó
+an14,1,Sin problema
+an14,2,Problema físico
+an14,3,No cooperó
+an15_1,"222,20",No se midió
+an15_2,"222,20",No se midió
+an16,1,Sin problema
+an16,2,Problema físico
+an16,3,No cooperó
+an17_1,"222,20",No se midió
+an18,1,Sin problema
+an18,2,Problema físico
+an18,3,No cooperó
+an19,"222,20",No se midió
+an20,1,Sin problema
+an20,2,Problema físico
+an20,3,No cooperó
+an21_1,"222,20",No se midió
+an21_2,"222,20",No se midió
+an22,1,Sin problema
+an22,2,Problema físico
+an22,3,No cooperó
+nota05,1,Favor de Continuar
+an23,"222,20",No se midió
+an24,1,Sin problema
+an24,2,Problema físico
+an24,3,No cooperó
+an25,"222,20",No se midió
+an26,1,Sin problema
+an26,2,Problema físico
+an26,3,No cooperó
+nota06,1,Favor de Continuar
+an27_01s,999,No se midió
+an27_01d,999,No se midió
+an27_02s,999,No se midió
+an27_02d,999,No se midió
+an27_03s,999,No se midió
+an27_03d,999,No se midió
+an29,1,Brazo derecho
+an29,2,Brazo izquierdo
+an29,3,No se tomó
+an30,1,Sin problema
+an30,2,Problema físico
+an30,3,No cooperó
+an30,4,Se negó
+completa,1,ENTREVISTA COMPLETA
+completa,2,ENTREVISTA INCOMPLETA
+completa,3,INFORMANTE INADECUADO
+completa,4,ENTREVISTA APLAZADA (HACER CITA)
+completa,5,AUSENTE DE PERSONAS EN EL MOMENTO DE LA VISITA
+completa,6,SE NEGO A DAR INFORMACIÓN
+completa,7,HABLA ALGUNA LENGUA EXTRANJERA
+completa,8,OTRO
+estrato,1,Rural  ( <2500 Hab )
+estrato,2,"Urbano ( 2500-99,999 Hab)"
+estrato,3,Metropolitano (100mil y + Hab)
