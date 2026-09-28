@@ -1,3 +1,17 @@
 {
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe"
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "latex-workshop.latex.tools": [
+        {
+            "name": "pdflatex",
+            "command": "C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/miktex/bin/x64/pdflatex.exe",
+            "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex x2",
+            "tools": ["pdflatex", "pdflatex"]
+        }
+    ],
+    "latex-workshop.view.pdf.viewer": "tab"
 }
