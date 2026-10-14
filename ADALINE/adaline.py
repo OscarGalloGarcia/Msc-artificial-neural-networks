@@ -1,6 +1,6 @@
 #Oscar Alberto Gallo García
 #Maestría en Ciencias en Robótica e Inteligencia Artificial
-#ADALINE (Widrow-Hoff / regla delta)
+#ADALINE 
 
 import numpy as np
 
