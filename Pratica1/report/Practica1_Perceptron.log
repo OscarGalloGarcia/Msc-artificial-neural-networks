@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.25)  28 SEP 2026 17:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.25)  22 OCT 2026 17:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -365,31 +365,31 @@ d-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count313
 ) (Practica1_Perceptron.aux
-LaTeX Info: Redefining \. on input line 9.
-LaTeX Info: Redefining \% on input line 9.
+LaTeX Info: Redefining \. on input line 14.
+LaTeX Info: Redefining \% on input line 14.
 Package babel Info: 'spanish' activates 'spanish' shorthands.
-(babel)             Reported on input line 9.
+(babel)             Reported on input line 14.
 )
 \openout1 = `Practica1_Perceptron.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
 
 -- Lines per column: 56 (exact).
-LaTeX Info: Redefining \. on input line 19.
-LaTeX Info: Redefining \% on input line 19.
+LaTeX Info: Redefining \. on input line 18.
+LaTeX Info: Redefining \% on input line 18.
 
 (C:\Users\OscarGallo\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-p
 df.mkii
@@ -416,35 +416,87 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 30.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 30.
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 29.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 29.
 
 
 (C:\Users\OscarGallo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 30.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 29.
 
 
 (C:\Users\OscarGallo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 6
-1.
-
-(C:\Users\OscarGallo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 [1{C:/Users/OscarGallo/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Use
 rs/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
 
 
 ]
-Overfull \hbox (9.71324pt too wide) detected at line 175
-[]
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
+34.
+
+(C:\Users\OscarGallo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+<figures/p1_patrones.png, id=22, 433.62pt x 397.485pt>
+File: figures/p1_patrones.png Graphic file (type png)
+<use figures/p1_patrones.png>
+Package pdftex.def Info: figures/p1_patrones.png  used on input line 191.
+(pdftex.def)             Requested size: 214.20154pt x 196.35234pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 199--207
+[]\OT1/ptm/m/n/10 Los par[]ame-tros ini-cia-les fue-ron $\OT1/cmr/bx/n/10 w\OT1
+/cmr/m/n/10 (0) =
  []
 
-[2] [3]
+<figures/p1_error.png, id=24, 361.35pt x 231.264pt>
+File: figures/p1_error.png Graphic file (type png)
+<use figures/p1_error.png>
+Package pdftex.def Info: figures/p1_error.png  used on input line 233.
+(pdftex.def)             Requested size: 214.20154pt x 137.09033pt.
+[2 <./figures/p1_patrones.png>]
+<figures/p1_plano.png, id=33, 433.62pt x 397.485pt>
+File: figures/p1_plano.png Graphic file (type png)
+<use figures/p1_plano.png>
+Package pdftex.def Info: figures/p1_plano.png  used on input line 253.
+(pdftex.def)             Requested size: 214.20154pt x 196.35234pt.
+<figures/p2_entrenamiento.png, id=34, 375.804pt x 361.35pt>
+File: figures/p2_entrenamiento.png Graphic file (type png)
+<use figures/p2_entrenamiento.png>
+Package pdftex.def Info: figures/p2_entrenamiento.png  used on input line 307.
+(pdftex.def)             Requested size: 201.60077pt x 193.84691pt.
+<figures/p2_error.png, id=35, 361.35pt x 231.264pt>
+File: figures/p2_error.png Graphic file (type png)
+<use figures/p2_error.png>
+Package pdftex.def Info: figures/p2_error.png  used on input line 343.
+(pdftex.def)             Requested size: 214.20154pt x 137.09033pt.
+ [3 <./figures/p1_error.png> <./figures/p1_plano.png> <./figures/p2_entrenamien
+to.png>]
+<figures/p2_fronteras.png, id=42, 404.712pt x 375.804pt>
+File: figures/p2_fronteras.png Graphic file (type png)
+<use figures/p2_fronteras.png>
+Package pdftex.def Info: figures/p2_fronteras.png  used on input line 367.
+(pdftex.def)             Requested size: 226.79846pt x 210.5979pt.
+<figures/p2_confusion.png, id=43, 289.08pt x 260.172pt>
+File: figures/p2_confusion.png Graphic file (type png)
+<use figures/p2_confusion.png>
+Package pdftex.def Info: figures/p2_confusion.png  used on input line 383.
+(pdftex.def)             Requested size: 156.23877pt x 140.61383pt.
+<figures/p2_generalizacion.png, id=44, 404.712pt x 375.804pt>
+File: figures/p2_generalizacion.png Graphic file (type png)
+<use figures/p2_generalizacion.png>
+Package pdftex.def Info: figures/p2_generalizacion.png  used on input line 421.
+
+(pdftex.def)             Requested size: 226.79846pt x 210.5979pt.
+<figures/p2_zoom.png, id=45, 361.35pt x 317.988pt>
+File: figures/p2_zoom.png Graphic file (type png)
+<use figures/p2_zoom.png>
+Package pdftex.def Info: figures/p2_zoom.png  used on input line 428.
+(pdftex.def)             Requested size: 214.20154pt x 188.49922pt.
+ [4 <./figures/p2_error.png> <./figures/p2_fronteras.png> <./figures/p2_confusi
+on.png>] [5 <./figures/p2_generalizacion.png> <./figures/p2_zoom.png>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -456,11 +508,11 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[4
+[6
 
 ] (Practica1_Perceptron.aux
-LaTeX Info: Redefining \. on input line 9.
-LaTeX Info: Redefining \% on input line 9.
+LaTeX Info: Redefining \. on input line 14.
+LaTeX Info: Redefining \% on input line 14.
 )
  ***********
 LaTeX2e <2025-11-01>
@@ -468,43 +520,41 @@ L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 5906 strings out of 467871
- 96536 string characters out of 5415956
- 556116 words of memory out of 5000000
- 34711 multiletter control sequences out of 15000+600000
- 671201 words of font info for 132 fonts, out of 8000000 for 9000
+ 5993 strings out of 467871
+ 98536 string characters out of 5415956
+ 542680 words of memory out of 5000000
+ 34793 multiletter control sequences out of 15000+600000
+ 673882 words of font info for 139 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,15n,65p,406b,365s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,14n,65p,408b,532s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
 s/cm/cmbx10.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmbx7.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX
-/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/OscarGallo/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/OscarGallo/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users
-/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.
+public/amsfonts/cm/cmex10.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTe
+X/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/OscarGallo/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/OscarGallo/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users
+/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.
 pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
-nts/cm/cmmi8.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1
-/public/amsfonts/cm/cmr10.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTe
-X/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/OscarGallo/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/OscarGallo/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/Osc
-arGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><
-C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
-m/cmsy10.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmsy5.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/OscarGallo/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/OscarGallo/AppDat
-a/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Osca
-rGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10
-.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier
-/ucrr8a.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/urw/
-times/utmb8a.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1
-/urw/times/utmbi8a.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts
-/type1/urw/times/utmr8a.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/
-fonts/type1/urw/times/utmri8a.pfb>
-Output written on Practica1_Perceptron.pdf (4 pages, 265629 bytes).
+nts/cm/cmr10.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmr6.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/OscarGallo/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/OscarGallo/AppDa
+ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/Osca
+rGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+<C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmsy7.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmsy8.pfb><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/OscarGallo/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Users/OscarGallo/
+AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/Osca
+rGallo/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users
+/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:
+/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pf
+b><C:/Users/OscarGallo/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr
+i8a.pfb>
+Output written on Practica1_Perceptron.pdf (6 pages, 1068707 bytes).
 PDF statistics:
- 131 PDF objects out of 1000 (max. 8388607)
+ 146 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 46 words of extra memory for PDF output out of 10000 (max. 10000000)
 

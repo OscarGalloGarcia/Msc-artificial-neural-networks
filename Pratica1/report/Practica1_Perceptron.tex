@@ -3,7 +3,6 @@
 % Paquetes para español
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
-% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
@@ -18,7 +17,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Perceptrón}
+\title{Perceptrón: clasificación lineal binaria y clasificación de cuatro clases con dos perceptrones}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Oscar Alberto Gallo García}
 \IEEEauthorblockA{\textit{M. C. en Robótica e Inteligencia Artificial} \\
@@ -30,357 +29,310 @@ oscar.gallo5770@alumnos.udg.mx}
 \maketitle
 
 \begin{abstract}
-    Se trabajó el algoritmo simple del perceptrón desde cero, implementado para
-    una neurona para clasificación lineal binaria y con dos neuronas para
-    clasificación de cuatro clases.
-    Se desarrollaron las funciones de entrenamiento y prediccion demostrando
-    la capacidad de este algoritmo para resolver problemas linealmente separables.
+    Se implementó desde cero el algoritmo de aprendizaje del perceptrón de
+    Rosenblatt y se aplicó a dos problemas linealmente separables.
+    En el primero, un perceptrón de tres entradas aprendió la función
+    lógica $f(x_1,x_2,x_3)=(x_1\wedge x_2)\vee(x_1\wedge x_3)\vee(x_2\wedge x_3)$,
+    alcanzando error de clasificación cero en $6$ épocas; el plano de decisión
+    obtenido separa correctamente los ocho vértices del cubo. En la segunda parte de
+    la práctica, dos perceptrones independientes entrenados sobre un
+    código binario de dos bits clasificaron $16$ patrones bidimensionales en
+    cuatro clases, con exactitud del $100\%$ en entrenamiento tras $4$ y $3$
+    épocas. Sobre ocho patrones de prueba no vistos, la red asignó clases
+    consistentes con las regiones aprendidas; sin embargo, cuatro de ellos
+    quedaron a menos de $0.08$ unidades de una frontera y uno a solo
+    $0.0009$, lo que muestra que el perceptrón no maximiza el margen y que su
+    generalización cerca de las fronteras es frágil.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Perceptrón, Neurona Artificial, Clasificacion lineal
+Perceptrón, neurona artificial, clasificación lineal, linealmente separable, generalización
 \end{IEEEkeywords}
 
 \section{Introducción}
+El perceptrón, propuesto por Rosenblatt en 1958 \cite{b4}, es la neurona artificial más
+simple capaz de aprender: calcula una combinación lineal de sus entradas,
+la compara con un umbral y corrige sus pesos únicamente cuando se equivoca
+\cite{b1,b2}. Su regla de aprendizaje tiene una garantía fuerte: si las dos
+clases son linealmente separables, el algoritmo converge en un número finito
+de correcciones (teorema de convergencia del perceptrón) \cite{b1,b3}. Cuando
+no lo son, como en la función XOR, el perceptrón nunca alcanza error cero,
+limitación señalada por Minsky y Papert \cite{b5} que motivó las redes
+multicapa \cite{b2}.
 
-
+El objetivo de esta práctica es implementar y analizar el algoritmo del
+perceptrón en dos problemas linealmente separables: (i) aprender una función
+lógica de tres variables con una sola neurona e interpretar geométricamente
+el plano de decisión; y (ii) construir un clasificador de cuatro clases en el
+plano con dos perceptrones, obtener la matriz de confusión y evaluar la
+capacidad de generalización sobre patrones no usados en el entrenamiento.
 
 \section{Desarrollo}
 
-\subsection{Modelo del Sistema No Lineal}
-El sistema de este proyecto se puede analizar a partir de las leyes de movimiento de Newton, dónde las fuerzas que actúan sobre el sistema se determinar a partir del esquemático del sistema (Figura \ref{fig:PICdiag}).\\
-Es fácil analizar el sistema si lo separamos en dos subsistemas; el carro y el péndulo invertido.\\
-Para el carro con desplazamiento lineal tenemos la suma de fuerzas \eqref{eq:Fcarro}
+\subsection{Modelo del perceptrón}
+Para un patrón $\mathbf{x}\in\mathbb{R}^n$ la neurona calcula el campo local
+inducido
 \begin{align}
-    \label{eq:Fcarro}
-    \sum F = 0 \rightarrow \quad F_c = H + M_c\ddot{x}_c+b_c\dot{x}_c
+    \label{eq:campo}
+    v = \mathbf{w}^\top\mathbf{x} + b = \sum_{i=1}^{n} w_i x_i + b,
 \end{align}
-Dónde $F_c$ es la fuerza lineal que se ejerce sobre el carro, $H$ es la fuerza de reacción interna horizontal del pivote que conecta con el péndulo, $M_c$ es la masa de carro, $b_c$ es un coeficiente de fricción viscosa del carro y $x_c$ es el desplazamiento lineal del carro.
-\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.1]{figures/PICdiag.jpg}
-\caption{Esquemático del Sistema}
-\label{fig:PICdiag}
-\end{figure}
-Ahora Podemos definir la suma de Torques en el péndulo.
+donde $\mathbf{w}$ es el vector de pesos y $b$ el sesgo (\textit{bias}), y
+produce la salida binaria con la función escalón
 \begin{align}
-    \label{eq:Tpendulo}
-    \sum \tau = 0\rightarrow \quad I\ddot{\alpha} = -Vl_p\sin(\alpha) -Hl_p\cos(\alpha) + b_p\dot{\alpha}
+    \label{eq:escalon}
+    y=\varphi(v)=\begin{cases}1, & v\geq 0\\ 0, & v<0.\end{cases}
 \end{align}
-Dónde $V$ es la fuerza de reacción interna vertical del pivote que conecta con el péndulo, $I$ es el momento de inercia del péndulo respecto a su centro de gravedad, $l_p$ es la longitud del péndulo al centro de gravedad y $b_p$ es el coeficiente de fricción viscosa del péndulo.\\
-Si aplicamos la segunda ley de Newton, podemos determinar el movimiento horizontal y vertical del péndulo \cite{b1}.
-\begin{align}
-    \label{eq:Fxpendulo}
-    \sum F_x &= 0 \rightarrow \quad H = M_p\ddot{x}_p\\
-    \label{eq:Fypendulo}
-    \sum F_y &= 0 \rightarrow \quad V = M_pg + M_p\ddot{y}_p
-\end{align}
-Dónde $M_p$ es la masa del péndulo y $g$ es la constante de aceleración por efecto de la gravedad. Ahora determinamos la posición del péndulo en sus componentes $(x,y)$.
-\begin{align}
-    \label{eq:Pospendulo}
-    x_p = x_c - l_p\sin(\alpha),\quad y_p = l_p\cos(\alpha)
-\end{align}
-Sustituyendo las coordenadas de \eqref{eq:Pospendulo} en \eqref{eq:Fxpendulo} y \eqref{eq:Fypendulo} tenemos:
-\begin{align}
-    H &= M_p\left( \ddot{x}_c - \frac{d^2}{dt^2}l_p\sin(\alpha) \right)\nonumber\\
-    \label{eq:Fxpendulo2}
-    H &= M_p\ddot{x}_c - M_pl_p\ddot{\alpha}\cos(\alpha) + M_pl_p\dot{\alpha}^2\sin(\alpha)\\
-    V &= M_pg + M_p\left(\frac{d^2}{dt^2}l_p\cos(\alpha)\right)\nonumber\\
-    \label{eq:Fypendulo2}
-    V &= M_pg -M_pl_p\ddot{\alpha}\sin(\alpha) -M_pl_p\dot{\alpha}^2\cos(\alpha)
-\end{align}
-Ahora podemos sustituir \eqref{eq:Fxpendulo2} en \eqref{eq:Fcarro}
-\begin{align}
-    \label{eq:EcCarro}
-    F_c = (M_p + M_c)\ddot{x}_c +M_pl_p\left(\dot{\alpha}^2\sin(\alpha)-\ddot{\alpha}\cos(\alpha) \right) + b_c\dot{x}_c
-\end{align}
-Y también podemos sustituir \eqref{eq:Fxpendulo2} y \eqref{eq:Fypendulo2} en \eqref{eq:Tpendulo}
-\begin{align}
-    \label{eq:EcPendulo}
-    I\ddot{\alpha} =& M_pl_p\left( l_p\ddot{\alpha} - g\sin(\alpha) - \ddot{x}_c\cos(\alpha) \right) + b_p\dot{\alpha}
-\end{align}
-Las ecuaciones \eqref{eq:EcCarro} y \eqref{eq:EcPendulo} representan las ecuaciones de movimiento del sistema PIC (Péndulo Invertido sobre Carro).
+La frontera de decisión es el hiperplano $\mathbf{w}^\top\mathbf{x}+b=0$: un
+plano en $\mathbb{R}^3$ para la primera práctica y una recta en
+$\mathbb{R}^2$ para la segunda. El vector $\mathbf{w}$ es normal a ese
+hiperplano y apunta hacia la región donde $y=1$.
 
-\subsection{Espacio de Estados}
-Tenemos que representar el sistema en espacio de estados de la forma \eqref{eq:SSForm}.
+\subsection{Regla de aprendizaje}
+Se usó la regla de corrección de error de Rosenblatt \cite{b1}. Para cada
+patrón $k$ con salida deseada $d(k)\in\{0,1\}$ se calcula $y(k)$ con
+\eqref{eq:campo}--\eqref{eq:escalon} y se actualiza
 \begin{align}
-    \label{eq:SSForm}
-    \dot{\mathbf{x}}&=f(\mathbf{x})+g(\mathbf{x})u\\
-    \mathbf{y}&=h(\mathbf{x})\nonumber
+    \label{eq:updW}
+    \mathbf{w}(k+1) &= \mathbf{w}(k) + \eta\,[d(k)-y(k)]\,\mathbf{x}(k),\\
+    \label{eq:updb}
+    b(k+1) &= b(k) + \eta\,[d(k)-y(k)],
 \end{align}
-Comenzamos con definir el sistema en forma matricial
-\begin{align*}
-    \begin{bmatrix}
-        M_pl^2_p - I & -M_pl_p\cos(\alpha)\\
-        -M_pl_p\cos(\alpha) & M_p + M_c
-    \end{bmatrix}
-    \begin{bmatrix}
-        \ddot{\alpha} \\ \ddot{x}
-    \end{bmatrix}
-    =\\
-    \begin{bmatrix}
-        M_pl_pg\sin(\alpha) - b_p\dot{\alpha}\\
-        F_c -M_pl_p\dot{\alpha}^2\sin(\alpha)-b_c\dot{x}_c
-    \end{bmatrix}
-\end{align*}
-Despejamos el vector de aceleraciones
-\begin{align*}
-    \begin{bmatrix}
-        \ddot{\alpha} \\ \ddot{x}
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        M_pl^2_p - I & -M_pl_p\cos(\alpha)\\
-        -M_pl_p\cos(\alpha) & M_p + M_c
-    \end{bmatrix}^{-1}\\
-    \begin{bmatrix}
-        M_pl_pg\sin(\alpha) - b_p\dot{\alpha}\\
-        F_c -M_pl_p\dot{\alpha}^2\sin(\alpha)-b_c\dot{x}_c
-    \end{bmatrix}
-\end{align*} 
-Al calcular la inversa y multiplicar las matrices tenemos dos ecuaciones para cada aceleración. Aprovechamos este paso para hacer el cambio de variables a variables de estado:
-\begin{align*}
-    x_1=x_c,\quad x_2=\dot{x}_c,\quad x_3=\alpha,\quad x_4=\dot{\alpha}
-\end{align*}
-Y el espacio de estados queda expresado mediante \eqref{eq:StateSpace}
-\begin{align}
-    \label{eq:StateSpace}
-    \begin{bmatrix}
-        \dot{x}_1\\ \dot{x}_2\\ \dot{x}_3\\ \dot{x}_4
-    \end{bmatrix}=
-    \begin{bmatrix}
-        x_2\\ f_2(\mathbf{x})\\ x_4 \\ f_4(\mathbf{x)}
-    \end{bmatrix}+
-    \begin{bmatrix}
-        0\\g_2(\mathbf{x})\\ 0\\ g_4(\mathbf{x})
-    \end{bmatrix}F_c
-\end{align}
-Dónde
-\begin{align}
-     f_2(\mathbf{x}) =&
-     [-(I+M_p l_p^2)\,b_c\,x_2 - (M_p^2 l_p^3 + M_p l_p I)\,x_4^2 \sin(x_3)\nonumber\\
-     \label{eq:f2}
-      &- M_p l_p \cos(x_3)\,b_p\,x_4
-        + M_p^2 l_p^2 g \cos(x_3)\sin(x_3)]/D(\mathbf{x})\\
-    f_4(\mathbf{x}) =&
-     [(M_p+M_c)M_p l_p g \sin(x_3) - (M_p+M_c)\,b_p\,x_4\nonumber\\
-     \label{eq:f4}
-      &- M_p^2 l_p^2 x_4^2 \sin(x_3)\cos(x_3)
-    - M_p l_p b_c \cos(x_3)\,x_2]/D(\mathbf{x})\\
-    \label{eq:g2}
-    g_2(\mathbf{x})=& \frac{I + M_p l_p^2}{D(\mathbf{x})}\\
-    \label{eq:g4}
-    g_4(\mathbf{x})=& \frac{M_p l_p \cos(x_3)}{D(\mathbf{x})}\\
-    D(\mathbf{x})=& (M_p+M_c)I+M_pM_cl_p^2 +M_p^2l_p^2\sin^2(x_3)\nonumber
-\end{align}
-\subsection{Puntos de Equilibrio}
-Para obtener los puntos de equilibrio tenemos que evaluar $\dot{\mathbf{x}}=\mathbf{0}$
-\begin{align*}
-    \dot{x}_1=0\rightarrow\quad x_2=0\\
-    \dot{x}_3=0\rightarrow\quad x_4=0\\
-\end{align*}
-\begin{align}
-    &\dot{x}_2=0\rightarrow\quad f_2(\mathbf{x})+g_2(\mathbf{x})F_c=0\nonumber\\
-    &(I+M_pl_p^2)F_c+M_p^2l_p^2g\cos(x_3)\sin(x_3)=0\nonumber\\
-    \label{eq:F1Equilibrium}
-    &F_c=-\frac{M_p^2l_p^2g\cos(x_3)\sin(x_3)}{I+M_pl_p^2}
-\end{align}
-\begin{align}
-    &\dot{x}_4=0\rightarrow\quad f_4(\mathbf{x})+g_4(\mathbf{x})F_c=0\nonumber\\
-    \label{eq:F2Equilibrium}
-    &(M_p+M_c)g\sin(x_3)+F_c\cos(x_3)=0
-\end{align}
-Sustituyendo \eqref{eq:F1Equilibrium} en \eqref{eq:F2Equilibrium}
-\begin{align*}
-    g\sin(x_3)\left(M_p+M_c-\frac{M_p^2l_p^2\cos^2(x_3)}{I+M_pl_p^2}\right)=0
-\end{align*}
-De aquí podemos tener dos factores que podrían ser 0. En el primer factor
-\begin{align}
-    \label{eq:FirstFactor}
-    g\sin(x_3)=0\rightarrow\quad x_3=k\pi\ |\ k\in\mathbb{Z}
-\end{align}
-En el segundo factor
-\begin{align}
-    \label{eq:SecondFactor}
-    \cos^2(x_3)=\frac{(M_p+M_c)(I+M_pl_p^2)}{M_p^2l_p^2}
-\end{align}
-Sabemos que
-\begin{align*}
-    0\leq \cos^2(x_3)\leq 1,\forall x_3\in\mathbb{R}
-\end{align*}
-Por lo tanto, para que este segundo factor sea 0, debe cumplirse:
-\begin{align}
-    \label{eq:FirstIneq}
-    (M_p+M_c)(I+M_pl_p^2)\leq M_p^2l_p^2
-\end{align}
-Pero observamos que
-\begin{align*}
-    M_p+M_c>0,\quad I+M_pl_p^2>M_pl_p^2
-\end{align*}
-Entonces
-\begin{align}
-    \label{eq:SecondIneq}
-    (M_p+M_c)(I+M_pl_p^2)> M_p(M_pl_p^2)
-\end{align}
-Las desigualdades \eqref{eq:FirstIneq} y \eqref{eq:SecondIneq} se contradicen, esto implica que \eqref{eq:SecondFactor} no se puede cumplir para parámetros físicos reales. Solo el factor \eqref{eq:FirstFactor} genera el 0 en la multiplicación.\\
-Por último sustituimos $x_3=k\pi$ en \eqref{eq:F1Equilibrium}
-\begin{align*}
-    F_c=0
-\end{align*}
-Los puntos de equilibrio encontrados son:
-\begin{align*}
-    \mathbf{x}^*=
-    \begin{bmatrix}
-        x_1^* & 0 & k\pi & 0
-    \end{bmatrix}^\top\ | \ k\in\mathbb{Z}
-\end{align*}
-Como se puede observar, existen infinitos puntos de equilibrio, pero se pueden simplificar en $x_3^*$ a los equilibrios naturales del péndulo (colgando e invertido)
-\begin{align}
-    \label{eq:Equilibrium}
-    \mathbf{x}_1^*=
-    \begin{bmatrix}
-         x_1^* & 0 & 0 & 0
-    \end{bmatrix}^\top,\quad
-    \mathbf{x}_2^*=
-    \begin{bmatrix}
-         x_1^* & 0 & \pi & 0
-    \end{bmatrix}^\top,\quad F_c=0
-\end{align}
-\subsection{Análisis de Puntos de Equilibrio}
-Para determinar el comportamiento y estabilidad de los puntos de equilibrio, se escoge linealizar el sistema al rededor de dichos puntos. Para ello se comienza con el cálculo del Jacobiano:
-\begin{align}
-    \label{eq:Jacobian}
-    \left. \begin{bmatrix}
-        0 & 1 & 0 & 0\\
-        0 & \frac{\partial f_2}{\partial x_2} & \frac{\partial f_2}{\partial x_3} & \frac{\partial f_2}{\partial x_4}\\
-        0 & 0 & 0 & 1\\
-        0 & \frac{\partial f_4}{\partial x_2} & \frac{\partial f_4}{\partial x_3} & \frac{\partial f_4}{\partial x_4}\\
-    \end{bmatrix}\right|_{\mathbf{x}=\mathbf{x}^*} =
-    \begin{bmatrix}
-        0 & 1 & 0 & 0\\
-        0 & a_{22} & a_{23} & c_3a_{24}\\
-        0 & 0 & 0 & 1\\
-        0 & c_3a_{42} & c_3a_{43} & a_{44}\\
-    \end{bmatrix}
-\end{align}
-Con
-\begin{align*}
-    a_{22} &= -\frac{(I+M_pl_p^2)b_c}{D_{\mathbf{x}^*}},
-    &&a_{24} = -\frac{M_pl_pb_p}{D_{\mathbf{x}^*}}\\
-    a_{23} &= \frac{M_p^2l_p^2g}{D_{\mathbf{x}^*}}\\
-    a_{42} &= -\frac{M_pl_pb_c}{D_{\mathbf{x}^*}},
-    &&a_{44} = -\frac{(M_p+M_c)b_p}{D_{\mathbf{x}^*}}
-\end{align*}
-\begin{align*}
-    a_{43} &= \frac{(M_p+M_c)M_pl_pg}{D_{\mathbf{x}^*}},\quad c_3=\cos(x_3)
-\end{align*}
-Dónde
-\begin{align*}
-    D_{\mathbf{x}^*}=(M_p+M_c)I+M_pM_cl_p^2
-\end{align*}
-Evaluamos la matriz en $\mathbf{x}_1^*$
-\begin{align}
-    \label{eq:Aeq1}
-    A_1=
-    \begin{bmatrix}
-        0 & 1 & 0 & 0\\ 0 & a_{22} & a_{23} & a_{24}\\ 0 & 0 & 0 & 1\\
-        0 & a_{42} & a_{43} & a_{44}
-    \end{bmatrix}
-\end{align}
-Y en $\mathbf{x}_2^*$
-\begin{align}
-    \label{eq:Aeq2}
-    A_2=
-    \begin{bmatrix}
-        0 & 1 & 0 & 0\\ 0 & a_{22} & a_{23} & -a_{24}\\ 0 & 0 & 0 & 1\\
-        0 & -a_{42} & -a_{43} & a_{44}
-    \end{bmatrix}
-\end{align}
-Para analizar el punto de equilibrio, tenemos que calcular los valores propios de la matriz $A$ correspondiente. Para simplificar los cálculos, se sustituyen los valores reales de los parámetros físicos del experimento, descritos en el Cuadro \ref{tab:params}.\\
-Para $A_1$
-\begin{align*}
-    \lambda_1=0,\quad \lambda_2=-8.2350,\quad \lambda_3=-4.6498,\quad \lambda_4=6.5
-\end{align*}
-Se puede ver que existe al menos un valor propio real positivo, por lo tanto $\mathbf{x}_1^*$ es inestable.\\
-Para $A_2$
-\begin{align*}
-    \lambda_1=0,\quad \lambda_2=-5.4542,\quad \lambda_3=-0.4695\pm6.7460i
-\end{align*}
-Existen valores propios negativos con parte imaginaria conjugada, por lo tanto $\mathbf{x}_2^*$ es marginalmente estable.
+con $\eta>0$ la razón de aprendizaje. Como $d-y\in\{-1,0,+1\}$, el patrón
+bien clasificado no modifica nada; un falso negativo ($d=1,y=0$) suma
+$\eta\mathbf{x}$ a los pesos y acerca la frontera a la región correcta, y un
+falso positivo ($d=0,y=1$) resta $\eta\mathbf{x}$. A diferencia de ADALINE,
+el error se calcula con la salida \emph{cuantizada} $y$, no con $v$, por lo que
+la regla no proviene del gradiente de una función de costo continua, sino de
+un argumento geométrico de corrección.
 
-\subsection{Control}
-Para el control no lineal se escoge realizar una linealización entrada-salida, que que busca simplificar la relación entre la entrada de control ($F_c=u$) y una salida específica del sistema. En nuestro caso definimos como salida la posición del péndulo, es decir, $x_3$.
-\begin{align*}
-    y=h(\mathbf{x})=x_3
-\end{align*}
-Comenzamos calculando la derivada de $y$ repetidamente hasta que la entrada $u$ aparezca explícitamente con un coeficiente no nulo. Esté numero de veces que derivamos define el grado relativo $r$
-\begin{align*}
-    \dot{y}&=\frac{\partial h(\mathbf{x})}{\partial \mathbf{x}}[f(\mathbf{x})+g(\mathbf{x})u]=x_4=\psi_2(\mathbf{x})\\
-    \ddot{y}&=\frac{\partial \psi_2(\mathbf{x})}{\partial \mathbf{x}}[f(\mathbf{x})+g(\mathbf{x})u]=f_4(\mathbf{x})+g_4(\mathbf{x})u
-\end{align*}
-en la derivada 2 se encuentra $u$, por lo tanto $r=2<n$.\\
-Definimos el sistema entrada-salida con $z_1=y,\ z_2=\dot{y}$
-\begin{align}
-    \label{eq:InOutSis}
-    \dot{z_1} &= z_2\\
-    \dot{z_2} &= f_4(\mathbf{x})+g_4(\mathbf{x})u\nonumber
-\end{align}
-Definimos $u$ para linealizar el sistema entrada-salida
-\begin{align}
-    \label{eq:UnonLinear}
-    u=\frac{v-f_4(\mathbf{x})}{g_4(\mathbf{x})}
-\end{align}
-Al sustituir \eqref{eq:UnonLinear} en \eqref{eq:InOutSis}, obtenemos el sistema lineal entrada-salida en lazo cerrado
-\begin{align}
-    \label{eq:InOutLinSis}
-    \dot{z}_1 &= z_2\\
-    \dot{z}_2 &= v\nonumber
-\end{align}
-Nótese que en $g_4(\mathbf{x})$ tenemos un $\cos(x_3)$, por lo tanto, la linealización con $u$ solamente es válida si:
-\begin{align*}
-    -\frac{\pi}{2}\leq x_3\leq \frac{\pi}{2}
-\end{align*}
-Una vez linealizado el sistema entrada-salida, se puede diseñar $v$ con asignación de polos.
-\begin{align*}
-    v=-k_1y-k_2\dot{y}
-\end{align*}
-Entonces
-\begin{align*}
-    \dot{\mathbf{z}}= \mathbf{A}_z\mathbf{z}=
-    \begin{bmatrix}
-        0 & 1\\ -k_1 & -k_2
-    \end{bmatrix}\mathbf{z}
-\end{align*}
-El polinomio característico es
-\begin{align*}
-    p_z(\lambda)=\det(\lambda\mathbf{I}-\mathbf{A}_z)=\lambda^2+k_2\lambda+k_1=0
-\end{align*}
-Si lo parametrizamos como un sistema de segundo orden
-\begin{align*}
-    p_z(\lambda)=\lambda^2+2\zeta\omega_n\lambda+\omega_n^2=0,\quad k_1=\omega_n^2,\ k_2=2\zeta\omega_n
-\end{align*}
-Escogemos una frecuencia $\omega_n<\sqrt{(M_pl_pg)/I_p}$. Sustituyendo los valores parámetros físicos tenemos  $\omega_n=6$ y $\zeta=0.8$. Esto nos da las ganancias $k_1=36$ y $k_2=9.6$.
-\subsection{Simulación}
+\subsection{Algoritmo e implementación}
+El algoritmo se programó en Python con NumPy para las operaciones vectoriales
+y Matplotlib para las gráficas, sin usar ninguna implementación preconstruida
+del perceptrón. Las actualizaciones son \emph{en línea}: se aplican
+inmediatamente después de cada patrón. El criterio de paro es error de
+clasificación igual a cero en una pasada completa por el conjunto de
+entrenamiento; como medida de seguridad se fijó un máximo de $100$ épocas,
+que nunca se alcanzó. Los pesos y sesgos iniciales se obtuvieron de una
+distribución uniforme $\mathcal{U}(0,1)$ con semilla $0$ del generador de
+NumPy para que los resultados sean reproducibles.
+\begin{algorithmic}[1]
+\STATE Inicializar $\mathbf{w}(0)$, $b(0)\sim\mathcal{U}(0,1)$
+\FOR{época $=1$ \TO $100$}
+    \STATE errores $\leftarrow 0$
+    \FOR{cada patrón $k$ en orden fijo}
+        \STATE $v\leftarrow\mathbf{w}^\top\mathbf{x}(k)+b$;\quad $y\leftarrow[v\geq0]$
+        \IF{$y\neq d(k)$}
+            \STATE $\mathbf{w}\leftarrow\mathbf{w}+\eta\,(d(k)-y)\,\mathbf{x}(k)$;\quad
+                   $b\leftarrow b+\eta\,(d(k)-y)$
+            \STATE errores $\leftarrow$ errores $+1$
+        \ENDIF
+    \ENDFOR
+    \IF{errores $=0$} \STATE Detener \ENDIF
+\ENDFOR
+\end{algorithmic}
+Para la segunda práctica el mismo procedimiento se encapsuló en una clase
+\texttt{perceptron} con métodos de entrenamiento y verificación, de la que
+se instanciaron dos objetos independientes.
 
-
-El sistema consiste en un péndulo rígido de masa $M_p$ articulado sobre un carro $M_c$ que se desplaza horizontalmente. La Tabla~\ref{tab:params} resume los parámetros del hardware empleado.
+\subsection{Práctica 1: función lógica de tres variables}
+La función $f(x_1,x_2,x_3)=(x_1\wedge x_2)\vee(x_1\wedge x_3)\vee(x_2\wedge x_3)$
+vale $1$ cuando al menos dos de las tres entradas valen $1$, es decir, es la
+función de \emph{mayoría}. Su tabla de verdad (Cuadro~\ref{tab:verdad}) define
+los ocho patrones de entrenamiento, que son los vértices del cubo unitario, y
+las clases $C_0$ ($f=0$, cuatro patrones) y $C_1$ ($f=1$, cuatro patrones).
+Se entrenó un perceptrón de tres entradas con $\eta=0.5$.
 
 \begin{table}[htbp]
-\caption{Parámetros del sistema Quanser IP01 + SIP}
-\label{tab:params}
+\caption{Tabla de verdad de $f(x_1,x_2,x_3)$ y clase de cada patrón}
+\label{tab:verdad}
 \begin{center}
-\begin{tabular}{lcc}
+\begin{tabular}{cccccccc}
 \toprule
-\textbf{Parámetro} & \textbf{Símbolo} & \textbf{Valor} \\
+$x_1$ & $x_2$ & $x_3$ & $x_1\wedge x_2$ & $x_1\wedge x_3$ & $x_2\wedge x_3$ & $f$ & Clase \\
 \midrule
-Masa del péndulo        & $M_p$   & $0.127$~kg \\
-Longitud total          & $L_p$   & $0.3365$~m \\
-Dist.\ al c.d.m.        & $l_p$   & $0.1778$~m \\
-Momento de inercia      & $I_p$   & $1.20\!\times\!10^{-3}$~kg\,m$^2$ \\
-Amort.\ péndulo         & $B_p$   & $0.0024$~N\,m\,s/rad \\
-Masa del carro          & $M_c$   & $0.7031$~kg \\
-Amort.\ equivalente     & $B_{eq}$& $4.3$~N\,s/m \\
-Gravedad                & $g$     & $9.81$~m/s$^2$ \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & $C_0$ \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & $C_0$ \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & $C_0$ \\
+0 & 1 & 1 & 0 & 0 & 1 & 1 & $C_1$ \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & $C_0$ \\
+1 & 0 & 1 & 0 & 1 & 0 & 1 & $C_1$ \\
+1 & 1 & 0 & 1 & 0 & 0 & 1 & $C_1$ \\
+1 & 1 & 1 & 1 & 1 & 1 & 1 & $C_1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Práctica 2: cuatro clases con dos perceptrones}
+Se usaron los $16$ patrones bidimensionales de la práctica, cuatro por clase,
+codificando cada clase con dos bits: $C_1=(0,0)$, $C_2=(0,1)$, $C_3=(1,0)$ y
+$C_4=(1,1)$. Dos perceptrones $P_1$ y $P_2$ con las mismas entradas
+$(x_1,x_2)$ se entrenaron de forma independiente con $\eta=0.1$: $P_1$ con
+la columna $y_1$ como objetivo (clases $C_3\cup C_4$ contra $C_1\cup C_2$) y
+$P_2$ con la columna $y_2$ ($C_2\cup C_4$ contra $C_1\cup C_3$). La clase
+final se obtiene decodificando el par $(\hat y_1,\hat y_2)$ con la tabla
+anterior, lo que equivale a calcular el índice $2\hat y_1+\hat y_2$.
+Posteriormente se clasificaron ocho patrones de prueba usando solo los pesos
+y sesgos aprendidos, sin volver a entrenar.
+
+\section{Resultados de la Práctica 1}
+
+\subsection{Separabilidad lineal}
+La Fig.~\ref{fig:p1pat} muestra los ocho vértices del cubo coloreados por
+clase. Los patrones de $C_1$ son los que tienen dos o tres unos, y los de
+$C_0$ los que tienen cero o un uno. Se observa que ambos grupos pueden
+separarse con un plano que corte el cubo entre la ``capa'' de vértices con un
+uno y la de vértices con dos unos. Analíticamente, el plano
+$x_1+x_2+x_3=1.5$ realiza esa separación, por lo que las clases son
+linealmente separables y se espera convergencia del perceptrón.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/p1_patrones.png}
+\caption{Patrones de la función $f$ en el espacio $(x_1,x_2,x_3)$. Círculos
+azules: $C_0$ ($f=0$); cruces rojas: $C_1$ ($f=1$). Las aristas grises unen
+vértices adyacentes del cubo.}
+\label{fig:p1pat}
+\end{figure}
+
+\subsection{Entrenamiento}
+Los parámetros iniciales fueron
+$\mathbf{w}(0)=[0.5488,\ 0.7152,\ 0.6028]^\top$ y $b(0)=0.5449$. Con estos
+valores todos los campos locales son positivos y el perceptrón inicial
+clasifica todo como $C_1$. El Cuadro~\ref{tab:p1evol} y la
+Fig.~\ref{fig:p1err} muestran la evolución por época. En la primera época se
+corrigen los tres patrones de $C_0$ distintos del origen que se recorren
+antes del origen; el número de errores oscila entre $2$ y $3$ durante cinco
+épocas y cae a cero en la sexta. En total hubo $12$ correcciones.
+
+\begin{table}[htbp]
+\caption{Evolución del entrenamiento del perceptrón de tres entradas ($\eta=0.5$)}
+\label{tab:p1evol}
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+Época & Errores & $w_1$ & $w_2$ & $w_3$ \\
+\midrule
+0 & -- & $0.5488$ & $0.7152$ & $0.6028$ \\
+1 & 3 & $0.0488$ & $0.2152$ & $0.1028$ \\
+2 & 2 & $0.0488$ & $0.7152$ & $0.6028$ \\
+3 & 3 & $0.0488$ & $0.7152$ & $0.6028$ \\
+4 & 2 & $0.5488$ & $0.7152$ & $1.1028$ \\
+5 & 2 & $0.5488$ & $1.2152$ & $1.1028$ \\
+6 & 0 & $0.5488$ & $1.2152$ & $1.1028$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{2pt}
+{\footnotesize El sesgo evolucionó como $b=0.5449,\,-0.9551,\,-0.9551,\,-1.4551$ y
+permaneció en $-1.4551$ desde la época 3.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/p1_error.png}
+\caption{Número de patrones mal clasificados por época (Práctica 1).}
+\label{fig:p1err}
+\end{figure}
+
+\subsection{Pesos finales y plano de decisión}
+Los parámetros finales son
+\begin{align}
+    \label{eq:p1final}
+    \mathbf{w}=\begin{bmatrix}0.5488 & 1.2152 & 1.1028\end{bmatrix}^\top,\qquad b=-1.4551,
+\end{align}
+de modo que el plano de decisión es
+$0.5488x_1+1.2152x_2+1.1028x_3=1.4551$. La Fig.~\ref{fig:p1plano} lo muestra
+junto con los patrones: los cuatro vértices de $C_1$ quedan del lado positivo
+del plano y los cuatro de $C_0$ del lado negativo. El Cuadro~\ref{tab:p1ver}
+confirma la clasificación correcta de los ocho patrones a partir del campo
+local $v$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/p1_plano.png}
+\caption{Plano de decisión aprendido (verde) y patrones por clase. El plano
+corta el cubo separando los vértices con dos o más unos de los demás.}
+\label{fig:p1plano}
+\end{figure}
+
+\begin{table}[htbp]
+\caption{Verificación de los ocho patrones con los pesos finales}
+\label{tab:p1ver}
+\begin{center}
+\begin{tabular}{cccrcc}
+\toprule
+$x_1$ & $x_2$ & $x_3$ & $v$ & $y$ & $d$ \\
+\midrule
+1 & 1 & 1 & $1.412$  & 1 & 1 \\
+1 & 1 & 0 & $0.309$  & 1 & 1 \\
+1 & 0 & 1 & $0.196$  & 1 & 1 \\
+1 & 0 & 0 & $-0.906$ & 0 & 0 \\
+0 & 1 & 1 & $0.863$  & 1 & 1 \\
+0 & 1 & 0 & $-0.240$ & 0 & 0 \\
+0 & 0 & 1 & $-0.352$ & 0 & 0 \\
+0 & 0 & 0 & $-1.455$ & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Relación entre la función lógica y la frontera}
+La función de mayoría es una \emph{función de umbral}: $f=1$ si
+$x_1+x_2+x_3\geq2$. El perceptrón aprendió exactamente esa estructura. Todos
+los pesos son positivos, por lo que cada entrada activa acerca al patrón al
+lado $C_1$, y el sesgo negativo ($-1.455$) actúa como umbral. Ninguna entrada
+por sí sola supera el umbral ($w_i<1.455$ para toda $i$), pero cualquier par
+sí lo hace: la suma mínima de dos pesos es $w_1+w_3=1.652>1.455$. Esto es
+precisamente la definición de la función: $f=1$ si y solo si al menos dos
+entradas están activas. Los pesos no son iguales entre sí, como lo serían en
+la solución ``simétrica'' $x_1+x_2+x_3=1.5$, porque el perceptrón se detiene
+en la primera solución que alcanza error cero, la cual depende de la
+inicialización y del orden de presentación. El patrón $(1,0,1)$ queda a solo
+$v=0.196$ del plano, el margen más pequeño de la solución.
+
+\section{Resultados de la Práctica 2}
+
+\subsection{Conjunto de entrenamiento}
+La Fig.~\ref{fig:p2train} muestra los $16$ patrones. Las clases ocupan
+aproximadamente cuatro sectores del plano: $C_1$ a la izquierda, $C_2$ abajo,
+$C_3$ arriba y $C_4$ a la derecha. La unión $C_3\cup C_4$ (objetivo de $P_1$)
+se separa de $C_1\cup C_2$ con una recta de pendiente negativa, y
+$C_2\cup C_4$ (objetivo de $P_2$) se separa de $C_1\cup C_3$ con una recta de
+pendiente positiva, por lo que ambos subproblemas binarios son linealmente
+separables.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\columnwidth]{figures/p2_entrenamiento.png}
+\caption{Conjunto de entrenamiento de la Práctica 2, con un marcador por clase y su código $(y_1,y_2)$.}
+\label{fig:p2train}
+\end{figure}
+
+\subsection{Entrenamiento y parámetros finales}
+El Cuadro~\ref{tab:p2param} reporta los parámetros iniciales y finales de
+ambos perceptrones y la Fig.~\ref{fig:p2err} la evolución del error. $P_1$
+convergió en $4$ épocas ($4,3,2,0$ errores) y $P_2$ en $3$ épocas
+($6,2,0$ errores). En ambos casos la inicialización positiva hace que al
+inicio casi todos los patrones se clasifiquen como $1$, y las correcciones
+sobre los patrones de la clase $0$ van rotando y desplazando la recta hasta
+separar los grupos.
+
+\begin{table}[htbp]
+\caption{Parámetros de los dos perceptrones ($\eta=0.1$)}
+\label{tab:p2param}
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+ & $w_1(0)$ & $w_2(0)$ & $b(0)$ & Épocas \\
+\midrule
+$P_1$ & $0.5488$ & $0.7152$ & $0.6028$ & 4 \\
+$P_2$ & $0.5449$ & $0.4237$ & $0.6459$ & 3 \\
+\midrule
+ & $w_1$ & $w_2$ & $b$ & Recta $x_2=mx_1+c$ \\
+\midrule
+$P_1$ & $0.4588$ & $0.5852$ & $-0.2972$ & $x_2=-0.784x_1+0.508$ \\
+$P_2$ & $0.3449$ & $-0.4763$ & $0.0459$ & $x_2=0.724x_1+0.096$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -388,60 +340,215 @@ Gravedad                & $g$     & $9.81$~m/s$^2$ \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[scale=0.15]{figures/image_1.png}
-\caption{Simulación: Posición del carro}
-\label{fig:PICSimpos}
+\includegraphics[width=0.85\columnwidth]{figures/p2_error.png}
+\caption{Patrones mal clasificados por época para $P_1$ y $P_2$.}
+\label{fig:p2err}
+\end{figure}
+
+\subsection{Fronteras de decisión y regiones}
+La Fig.~\ref{fig:p2front} muestra las dos rectas aprendidas y las cuatro
+regiones que generan. La frontera de $P_1$ (verde) tiene pendiente negativa y
+deja arriba-derecha a $C_3$ y $C_4$ ($y_1=1$); la de $P_2$ (naranja) tiene
+pendiente positiva y deja abajo-derecha a $C_2$ y $C_4$ ($y_2=1$). Ambas
+rectas se cruzan en $(0.273,\ 0.294)$ y dividen el plano en cuatro regiones
+angulares, cada una asociada a un código distinto: izquierda $(0,0)=C_1$,
+abajo $(0,1)=C_2$, arriba $(1,0)=C_3$ y derecha $(1,1)=C_4$. Cada perceptrón
+responde una pregunta binaria sobre la posición del patrón y la combinación
+de las dos respuestas identifica el sector.
+
+Es notable que la recta de $P_1$ pasa casi por el patrón $(0,\,0.5)$ de
+$C_1$: su campo local es $v=-0.0046$ y su distancia a la frontera es de solo
+$0.006$ unidades. El perceptrón lo clasifica bien, pero sin margen. La
+distancia mínima de los patrones de entrenamiento a la recta de $P_2$ es
+mayor, $0.148$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\columnwidth]{figures/p2_fronteras.png}
+\caption{Cuatro clases y las dos fronteras aprendidas. Las zonas sombreadas
+son las regiones que el decodificador asigna a cada clase.}
+\label{fig:p2front}
+\end{figure}
+
+\subsection{Matriz de confusión y exactitud}
+Al clasificar los $16$ patrones de entrenamiento con los pesos finales y el
+decodificador, los $16$ quedaron en la diagonal de la matriz de confusión
+(Fig.~\ref{fig:p2cm}): cuatro aciertos por clase y ningún error, es decir,
+exactitud del $100\%$. Esto era esperable: cada perceptrón alcanzó error
+cero sobre su bit, y si ambos bits son correctos la clase decodificada
+también lo es.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\columnwidth]{figures/p2_confusion.png}
+\caption{Matriz de confusión $4\times4$ sobre el conjunto de entrenamiento.}
+\label{fig:p2cm}
+\end{figure}
+
+\section{Pruebas y análisis de generalización}
+Los ocho patrones de prueba se clasificaron únicamente con los pesos
+aprendidos. El Cuadro~\ref{tab:gen} muestra las salidas de cada perceptrón,
+la clase predicha y la distancia con signo de cada patrón a cada frontera,
+$\delta_j=(\mathbf{w}_j^\top\mathbf{x}+b_j)/\|\mathbf{w}_j\|$, donde el
+signo indica el lado de la recta y la magnitud qué tan lejos está. La
+Fig.~\ref{fig:p2gen} ubica los patrones de prueba sobre las regiones
+aprendidas y la Fig.~\ref{fig:p2zoom} amplía la zona de cruce de las
+fronteras.
+
+\begin{table}[htbp]
+\caption{Clasificación de los patrones de prueba}
+\label{tab:gen}
+\begin{center}
+\begin{tabular}{crrccrrc}
+\toprule
+\# & $x_1$ & $x_2$ & $\hat y_1$ & $\hat y_2$ & $\delta_1$ & $\delta_2$ & Clase \\
+\midrule
+1 & $-1.20$ & $0.70$  & 0 & 0 & $-0.589$ & $-1.193$ & $C_1$ \\
+2 & $0.45$  & $0.50$  & 1 & 0 & $0.271$  & $-0.063$ & $C_3$ \\
+3 & $0.20$  & $-0.80$ & 0 & 1 & $-0.906$ & $0.843$  & $C_2$ \\
+4 & $0.49$  & $0.45$  & 1 & 1 & $0.257$  & $0.0009$ & $C_4$ \\
+5 & $-0.20$ & $1.50$  & 1 & 0 & $0.657$  & $-1.254$ & $C_3$ \\
+6 & $0.49$  & $0.55$  & 1 & 0 & $0.335$  & $-0.080$ & $C_3$ \\
+7 & $1.60$  & $0.20$  & 1 & 1 & $0.745$  & $0.854$  & $C_4$ \\
+8 & $0.55$  & $0.49$  & 1 & 1 & $0.325$  & $0.0037$ & $C_4$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\columnwidth]{figures/p2_generalizacion.png}
+\caption{Patrones de prueba (estrellas numeradas) sobre las regiones aprendidas.}
+\label{fig:p2gen}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[scale=0.15]{figures/image_2.png}
-\caption{Simulación: ángulo del péndulo}
-\label{fig:PICSimdeg}
+\includegraphics[width=0.85\columnwidth]{figures/p2_zoom.png}
+\caption{Acercamiento a la zona $[0,1]\times[0,1]$: los patrones 2, 4, 6 y 8
+se encuentran junto a la frontera de $P_2$.}
+\label{fig:p2zoom}
 \end{figure}
 
+\textbf{Patrones próximos a una frontera.} Los patrones 2, 4, 6 y 8 están a
+menos de $0.08$ unidades de la recta de $P_2$ (Cuadro~\ref{tab:gen},
+Fig.~\ref{fig:p2zoom}). Los casos extremos son el patrón 4, a $0.0009$
+unidades, y el 8, a $0.0037$. Estos cuatro patrones fueron colocados
+deliberadamente alrededor de $(0.5,0.5)$, a ambos lados de la frontera que
+separa $C_3$ de $C_4$. Los patrones 1, 3, 5 y 7, en cambio, están a más de
+$0.58$ unidades de ambas fronteras, en el interior de las regiones.
 
+\textbf{Patrones alejados contra patrones cercanos.} Para los patrones
+alejados la predicción es robusta y coincide con lo que sugiere la
+distribución del entrenamiento: el patrón 1 está entre los círculos de
+$C_1$, el 3 entre los cuadrados de $C_2$, el 5 entre los triángulos de $C_3$
+y el 7 entre las cruces de $C_4$. Para los patrones cercanos la decisión
+depende de milésimas: los patrones 4 $(0.49,0.45)$ y 6 $(0.49,0.55)$
+difieren solo en $0.1$ en $x_2$ y reciben clases distintas ($C_4$ y $C_3$),
+y lo mismo ocurre con los patrones 2 y 8. En esa zona no hay patrones de
+entrenamiento de $C_3$ ni de $C_4$ (los más cercanos están en $(0.5,1.5)$ y
+$(1.5,0.5)$), por lo que la posición exacta de la frontera allí no está
+respaldada por datos sino por el azar de la inicialización y del orden de
+las correcciones.
 
+\textbf{Efecto de una perturbación.} Una perturbación $\Delta$ en el patrón
+cambia $\delta_j$ en a lo sumo $\|\Delta\|$. Para el patrón 4 basta
+$\|\Delta\|>0.0009$ en la dirección normal a la recta de $P_2$, por ejemplo
+$x_2=0.451$ en lugar de $0.450$, para que $\hat y_2$ pase de $1$ a $0$ y la
+clase cambie de $C_4$ a $C_3$; para el patrón 8 basta $0.004$ y para los
+patrones 2 y 6 cerca de $0.06$--$0.08$. En cambio el patrón 7 tolera
+perturbaciones de hasta $0.74$ unidades sin cambiar de clase. Como además la
+frontera de $P_1$ pasa a $0.006$ del patrón de entrenamiento $(0,0.5)$, una
+perturbación de ese orden en un patrón similar también cambiaría su clase de
+$C_1$ a $C_3$.
 
-\section{Resultados}
+\textbf{Significado de generalizar.} En este problema generalizar es asignar
+a un punto nuevo la clase del sector del plano en que cae, sin haberlo visto
+durante el entrenamiento. Las Figs.~\ref{fig:p2front} y \ref{fig:p2gen}
+muestran que las fronteras aprendidas extienden a todo el plano la
+separación observada en solo $16$ puntos. La generalización es buena lejos
+de las fronteras, donde cualquier recta separadora razonable daría la misma
+respuesta, y es incierta cerca de ellas, donde rectas igualmente válidas
+sobre el entrenamiento producirían clases distintas. Como ninguno de los
+patrones de prueba tiene etiqueta verdadera, no puede calcularse una
+exactitud de prueba; lo que sí se puede afirmar es que las predicciones para
+los patrones 1, 3, 5 y 7 son confiables y las de 2, 4, 6 y 8 dependen de la
+solución particular encontrada.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.5]{figures/3.png}
-\caption{Sistema experimental}
-\label{fig:PICexp}
-\end{figure}
+\section{Discusión}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.2]{figures/image_3.png}
-\caption{Sistema experimental: Posición del carro}
-\label{fig:PICpos}
-\end{figure}
+\textbf{Convergencia.} En ambas prácticas el perceptrón alcanzó error cero en
+pocas épocas ($6$, $4$ y $3$), de acuerdo con el teorema de convergencia para
+clases linealmente separables \cite{b1}. El número de correcciones es pequeño
+porque los problemas tienen pocos patrones y margen geométrico razonable; el
+valor de $\eta$ solo escala la magnitud de cada corrección y, con
+inicialización aleatoria, afecta la solución final pero no la convergencia.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.13]{figures/Angulo.jpg}
-\caption{Sistema experimental: ángulo del péndulo}
-\label{fig:PICdeg}
-\end{figure}
+\textbf{La solución no es única.} El perceptrón se detiene en la
+\emph{primera} solución con error cero, que depende de $\mathbf{w}(0)$, $b(0)$,
+$\eta$ y del orden de los patrones. Esto explica que los pesos de la
+Práctica 1 no sean simétricos aunque la función de mayoría lo sea, y que en
+la Práctica 2 la recta de $P_1$ pase a $0.006$ de un patrón de entrenamiento.
+El algoritmo no tiene ningún mecanismo para preferir la recta de margen máximo
+entre todas las que separan los datos; esa es la idea central de las máquinas
+de vectores de soporte \cite{b1,b3}.
+
+\textbf{Dos clasificadores binarios para cuatro clases.} Con $k$ perceptrones
+de salida binaria se pueden codificar hasta $2^k$ clases, siempre que cada
+bit del código corresponda a una partición linealmente separable del
+conjunto. Aquí la codificación funcionó porque las uniones
+$C_3\cup C_4$ y $C_2\cup C_4$ son separables. Con otra asignación de códigos,
+por ejemplo si $P_1$ tuviera que separar $C_1\cup C_4$ de $C_2\cup C_3$
+(sectores opuestos), el subproblema sería del tipo XOR y el perceptrón no
+convergería. La codificación de las clases es, por tanto, parte del diseño.
+
+\textbf{Limitaciones.}
+\begin{itemize}
+    \item Sin un conjunto de prueba etiquetado no es posible medir
+    cuantitativamente la generalización; solo puede analizarse
+    geométricamente.
+    \item La salida escalón no entrega una medida de confianza; usamos la
+    distancia a la frontera como sustituto, pero el modelo no la aprende ni
+    la optimiza.
+    \item Las regiones aprendidas son no acotadas: un punto muy lejano, como
+    $(10,10)$, se asigna a $C_4$ aunque no se parezca a ningún patrón de
+    entrenamiento.
+    \item Los resultados numéricos dependen de la semilla; con otra semilla
+    las fronteras cambian y los patrones de prueba 2, 4, 6 y 8 podrían
+    recibir clases distintas.
+\end{itemize}
 
 \section{Conclusiones}
-Aunque la condición teórica de la linealización requiere únicamente que $\cos(x_3)\neq0$, lo cual se cumple para $|x_3|<\pi/2$, en la práctica la validez del modelo se restringe a un entorno pequeño alrededor del punto de equilibrio.
-Esto se debe a que, conforme $x_3$ se aproxima a $\pm\pi/2$, el término $g_4(\mathbf{x})$ tiende a cero, provocando que la ley de control requiera valores excesivamente grandes de la entrada $u$, lo cual no es físicamente realizable.
-Además, para ángulos grandes, los efectos no lineales se vuelven dominantes, deteriorando la precisión de la linealización. Por esta razón, se considera un rango práctico de operación de aproximadamente $|x_3|<10\sim15\ \deg$.
+Se implementó desde cero el perceptrón de Rosenblatt con la regla de
+corrección de error y se verificó experimentalmente su convergencia en dos
+problemas linealmente separables. En la Práctica 1 una sola neurona aprendió
+la función de mayoría de tres variables en $6$ épocas; los pesos positivos y
+el sesgo negativo reproducen la estructura de umbral de la función, y el
+plano aprendido separa los vértices del cubo con dos o más unos de los demás.
+En la Práctica 2 dos perceptrones independientes dividieron el plano en
+cuatro regiones angulares y clasificaron correctamente los $16$ patrones de
+entrenamiento, con exactitud del $100\%$ y matriz de confusión diagonal.
+
+La prueba de generalización mostró la principal debilidad del método: el
+perceptrón encuentra \emph{una} frontera separadora, no la mejor. Cuatro de
+los ocho patrones de prueba quedaron a menos de $0.08$ unidades de una
+frontera y uno a $0.0009$, de modo que perturbaciones mínimas cambian su
+clase. Generalizar bien en este problema requiere fronteras alejadas de los
+datos, lo que motiva criterios de margen máximo o funciones de costo
+continuas como la de ADALINE, que se estudia en la siguiente práctica.
 
 \begin{thebibliography}{00}
 
-\bibitem{b1} H. K. Khalil, Nonlinear Systems, 3rd ed. Upper Saddle River, NJ: Prentice Hall, 2002.
+\bibitem{b1} S. Haykin, \textit{Neural Networks and Learning Machines}, 3rd ed. Upper Saddle River, NJ, USA: Pearson/Prentice Hall, 2009.
 
-\bibitem{b2} J.-J. E. Slotine and W. Li, Applied Nonlinear Control. Englewood Cliffs, NJ: Prentice Hall, 1991.
+\bibitem{b2} C. C. Aggarwal, \textit{Neural Networks and Deep Learning: A Textbook}. Cham, Switzerland: Springer, 2018.
 
-\bibitem{b3} A. Isidori, Nonlinear Control Systems, 3rd ed. London, U.K.: Springer-Verlag, 1995.
+\bibitem{b3} B. Mehlig, \textit{Machine Learning with Neural Networks: An Introduction for Scientists and Engineers}. Cambridge, U.K.: Cambridge University Press, 2021.
 
-\bibitem{b4} K. Ogata, Modern Control Engineering, 5th ed. Upper Saddle River, NJ: Prentice Hall, 2010.
+\bibitem{b4} F. Rosenblatt, ``The perceptron: A probabilistic model for information storage and organization in the brain,'' \textit{Psychological Review}, vol. 65, no. 6, pp. 386--408, 1958.
 
-\bibitem{b5} F. L. Lewis, D. Vrabie, and V. L. Syrmos, Optimal Control, 3rd ed. Hoboken, NJ: Wiley, 2012.
+\bibitem{b5} M. Minsky and S. Papert, \textit{Perceptrons: An Introduction to Computational Geometry}. Cambridge, MA, USA: MIT Press, 1969.
 
 \end{thebibliography}
 
