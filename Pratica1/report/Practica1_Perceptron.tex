@@ -53,18 +53,18 @@ Perceptrón, neurona artificial, clasificación lineal, linealmente separable, g
 El perceptrón, propuesto por Rosenblatt en 1958 \cite{b4}, es la neurona artificial más
 simple capaz de aprender: calcula una combinación lineal de sus entradas,
 la compara con un umbral y corrige sus pesos únicamente cuando se equivoca
-\cite{b1,b2}. Su regla de aprendizaje tiene una garantía fuerte: si las dos
-clases son linealmente separables, el algoritmo converge en un número finito
+\cite{b1,b2}. La regla de aprendizaje depende de que las
+clases sean linealmente separables, de ser asi el algoritmo converge en un número finito
 de correcciones (teorema de convergencia del perceptrón) \cite{b1,b3}. Cuando
-no lo son, como en la función XOR, el perceptrón nunca alcanza error cero,
-limitación señalada por Minsky y Papert \cite{b5} que motivó las redes
-multicapa \cite{b2}.
+no lo son, como en la función XOR, el perceptrón nunca alcanza error cero.
+Dicha limitacion sería uno de los desafios que posteriormente resolveran las redes 
+multicapa.
 
 El objetivo de esta práctica es implementar y analizar el algoritmo del
 perceptrón en dos problemas linealmente separables: (i) aprender una función
 lógica de tres variables con una sola neurona e interpretar geométricamente
 el plano de decisión; y (ii) construir un clasificador de cuatro clases en el
-plano con dos perceptrones, obtener la matriz de confusión y evaluar la
+plano con dos perceptrones y evaluar la
 capacidad de generalización sobre patrones no usados en el entrenamiento.
 
 \section{Desarrollo}
